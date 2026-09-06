@@ -57,14 +57,14 @@ Graph results are evidence, not an oracle — each finding is verified against s
 
 ## Checkpoint links and what each checkpoint proves
 
-**Repo:** GitHub fork `github.com/khushi-infinity/external-agents` · **Mirror:** `entire://aws-ap-south-1.entire.io/gh/khushi-infinity/external-agents` (India region, Mirror ID `01M1THHNBW0K7KFTZGE9ETPD9K`) · **Branch:** `agent-activity-universe` · **Pushed SHA:** `1692761` (feature branch; `main` is protected on the mirror, so pushes go to the feature branch and are verified with `entire checkpoint list`).
+**Repo:** GitHub fork `github.com/khushi-infinity/external-agents` · **Mirror:** `entire://aws-ap-south-1.entire.io/gh/khushi-infinity/external-agents` (India region, Mirror ID `01M1THHNBW0K7KFTZGE9ETPD9K`) · **Branch:** `agent-activity-universe` · **Pushed SHA:** `10cb63c` (feature branch; `main` is protected on the mirror, so pushes go to the feature branch and are verified with `entire checkpoint list`).
 
 Checkpoints are created when a commit happens during an ACTIVE agent session (hooks installed, agent authed). Milestone commits are made from inside a supported agent session (`codex` in the mirror clone), then verified with `entire checkpoint list`.
 
 | Milestone | Commit | Checkpoint | What it proves |
 |-----------|--------|------------|----------------|
 | Initial understanding & intended architecture | `a081600` (amended `ca06a8e`) | `e6e841e2def8` | Captures the build plan: E3 track, Entire-central architecture, PDF scope decisions |
-| Pre-noon stable state (11:45) | TBD | TBD | Runnable product before the Curveball |
+| Pre-noon stable state (11:45) | `10cb63c` | `2adb77572071` | Runnable product before the Curveball |
 | Curveball response (12:00+) | TBD | TBD | Adaptation implemented, tested, explained |
 | Final implementation & verification (before 3 PM) | TBD | TBD | Tests pass, BUILDATHON.md complete, graph evidence |
 

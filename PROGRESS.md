@@ -36,7 +36,7 @@
 - Synthetic sample data is intentional until a real Entire export is dropped into `agent-universe/public/data/entire-export.json`.
 - Submission deadline is 3:00 PM IST on 2026-09-06, and the Noon Curveball should be handled in a fresh post-curveball session.
 
-> **Last updated:** 6 September 2026 (~10:45, build day)
+> **Last updated:** 6 September 2026 11:47 IST, build day
 >
 > ⚠️ **SOURCE OF TRUTH #1:** The PDF **`/Users/khushisarawagi/Downloads/What we're building.pdf`** (33 pages) is the authoritative build plan.
 > ⚠️ **SOURCE OF TRUTH #2 (STRICT RULES):** The PDF **`/Users/khushisarawagi/Downloads/BTW Buildathon 2026 - Participant Guide.pdf`** (9 pages) is the operating guide and MUST be followed strictly. Key rules: (1) **SUBMISSION DEADLINE IS 3:00 PM IST, NOT 4:00 PM**; (2) all implementation must happen in the clone created through the Entire mirror workflow; (3) required checkpoints at 4 milestones (initial understanding → pre-noon stable → curveball response → final verification); (4) Entire Graph activation required (`entire plugin install graph`, `entire graph init-agents --repo .`); (5) final checklist requires tests covering critical + Curveball behavior; (6) BUILDATHON.md must follow their exact 10-section outline; (7) fork only after official start, mirror with India region; (8) demo owner must be able to sign in and run the critical path; (9) no secrets anywhere; (10) fallback screenshot/recording for fragile live steps. Key directives: (1) the 3D visualization is NOT the product — the product is *"understand what AI coding agents are doing, why, and where risk is created"*; (2) Entire checkpoint/session data MUST be central — *"do not build a generic Three.js dashboard"*; (3) build the smallest useful version with sample data FIRST, then connect real Entire data, then polish, then Databricks; (4) Activity Replay is a priority demo feature; (5) the hero screen is the UNIVERSE, dashboard is secondary; (6) do NOT build login/registration/databases/billing/dashboards/chat. PDF phases: inspect repo → inspect Entire → architecture → backend/data adapter → 3D frontend → connect real data → test → polish → checkpoint + commit.
@@ -62,7 +62,7 @@
 
 ### Where the implementation lives (STRICT GUIDE COMPLIANCE)
 
-All implementation lives in the **Entire mirror clone**: `buildathon/external-agents-mirror/` (origin = `entire://aws-ap-south-1.entire.io/gh/khushi-infinity/external-agents`, India region). Pushed to mirror branch `agent-activity-universe`, **latest SHA `87aea50`** (main is protected on the mirror; pushes go to the feature branch).
+All implementation lives in the **Entire mirror clone**: `buildathon/external-agents-mirror/` (origin = `entire://aws-ap-south-1.entire.io/gh/khushi-infinity/external-agents`, India region). Pushed to mirror branch `agent-activity-universe`, **latest SHA `10cb63c`** (main is protected on the mirror; pushes go to the feature branch).
 
 ```
 external-agents-mirror/            ← THE designated fork clone (work here)
@@ -146,7 +146,7 @@ The `adapter → normalized data → product` separation makes the Noon Curvebal
 |---|------|------|-----|
 | 1 | ~~Mirror fork on entire.io (India)~~ | ✅ DONE | `khushi-infinity/external-agents` on aws-ap-south-1, Mirror ID `01M1THHNBW0K7KFTZGE9ETPD9K` |
 | 2 | Databricks workspace run | before 3 PM | import `databricks/ingest_and_score.py` → upload `events.ndjson` → run all cells → screenshot |
-| 3 | **Pre-noon checkpoint** | **11:45** | `cd ~/Desktop/buildathon/external-agents-mirror && codex` → "commit current state as pre-noon stable milestone" → `entire checkpoint list` |
+| 3 | ~~**Pre-noon checkpoint**~~ | ✅ DONE | Checkpoint `2adb77572071` at commit `10cb63c` (`Pre-noon stable milestone: Agent Activity Universe`) |
 | 4 | **Noon Curveball** | **12:00** | STOP, close session, receive constraint, fresh session, `entire graph impact` before editing |
 | 5 | Curveball response + final checkpoint | 1:00–2:30 | implement, test, checkpoint, update BUILDATHON.md §5–6 |
 | 6 | Submit | **before 3:00 PM** | track E3, fork URL, final SHA, mirror URL, checkpoint links, demo access, Databricks opt-in |
@@ -192,7 +192,7 @@ The `adapter → normalized data → product` separation makes the Noon Curvebal
 |------|-----------|--------|
 | 8:00–9:00 | Breakfast, check-in, setup | ✅ |
 | 9:00–12:00 | Kickoff + build session | ✅ core built (correct fork, mirror, graph, hooks, checkpoint 1) |
-| 11:45 | Preserve stable state + pre-noon checkpoint | 🔲 user: commit via Codex session |
+| 11:45 | Preserve stable state + pre-noon checkpoint | ✅ done: checkpoint `2adb77572071` at commit `10cb63c` |
 | 12:00–1:00 | ⚡ Noon Curveball + lunch | 🔲 receive, stop, fresh session |
 | 1:00–3:00 | Implement constraint, test, final checkpoint, finish BUILDATHON.md | 🔲 |
 | **3:00 PM** | **SUBMISSION DEADLINE (not 4 PM!)** | 🔲 |
@@ -213,7 +213,7 @@ The `adapter → normalized data → product` separation makes the Noon Curvebal
 | `entire graph init-agents --repo .` | ✅ wrote `.entire/graph-agent.md` + `AGENTS.md` |
 | Implementation lives in the designated fork | ✅ agent-universe/ + databricks/ inside external-agents-mirror, pushed to `agent-activity-universe` (SHA `87aea50`) |
 | Checkpoint 1: initial understanding | ✅ **`e6e841e2def8`** (09-06 10:37, linked to `ca06a8e`) — created via `entire session attach` with the real build-session transcript |
-| Checkpoints 2–4 (pre-noon, curveball, final) | 🔲 user action at milestones (Codex session) |
+| Checkpoints 2–4 (pre-noon, curveball, final) | ✅ pre-noon done: checkpoint `2adb77572071` at commit `10cb63c`; 🔲 curveball pending; 🔲 final pending |
 | Entire Graph evidence gathered | ✅ `search` (found computeRiskMap top-ranked), `impact` (blast radius), `diff` (semantic change list) — recorded in BUILDATHON.md |
 | Tests covering critical behavior | ✅ 7 vitest tests passing (adapter, timeline, risk, NDJSON, connection colors) |
 | BUILDATHON.md in guide's 10-section outline | ✅ at external-agents-mirror/BUILDATHON.md (all sections filled except Curveball §5–6) |
