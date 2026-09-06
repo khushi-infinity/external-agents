@@ -67,7 +67,7 @@ Graph impact analysis ran **before** the Curveball implementation (required step
 | Initial understanding & intended architecture | `e6e841e2def8` (commit `ca06a8e`) | Build plan: E3 track, Entire-central architecture, PDF scope |
 | Pre-noon stable state (11:45) | `2adb77572071` (commit `10cb63c`) | Runnable product before the Curveball, intent/architecture/risks recorded |
 | **Curveball response — Freebuff plugin (12:00+)** | `614fa84595b2` (commit `dcfa571`) | Freebuff external agent added to Entire and enabled (`entire enable --agent freebuff` → 4 hooks); dual-format transcript support; the four Curveball tests pass; checkpoint created by attaching the live **Freebuff session** `fb-curveball-001` (`entire session attach --agent freebuff fb-curveball-001` → “Created checkpoint 614fa84595b2”) — proof Freebuff work now produces Entire checkpoints |
-| Final implementation & verification | `_id_` (commit `_sha_`) | Final state: all tests green, graph evidence recorded, docs complete |
+| Final implementation & verification | `5531a5f11fa4` (commit `02f6095`) | Final state: the docs commit was itself checkpointed **automatically from the active Freebuff session** (`fb-curveball-001`) by the Entire commit hook, then enriched via attach — Freebuff sessions now produce Entire checkpoints exactly like natively supported agents; tests green, graph evidence recorded |
 
 ## Setup, run and test instructions
 

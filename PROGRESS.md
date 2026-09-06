@@ -48,8 +48,8 @@ Agent Activity Universe (React Three Fiber)  ←→  Databricks risk analytics (
 ```
 
 ## 4. 🔜 REMAINING (before 3 PM)
-1. ✅ Curveball checkpoint done: `614fa84595b2` on `dcfa571` (attach flow, real Freebuff session).
-2. Final docs commit → final verification checkpoint (in progress now).
+1. ✅ Curveball checkpoint: `614fa84595b2` on `dcfa571` (Freebuff session `fb-curveball-001`).
+2. ✅ Final verification checkpoint: `5531a5f11fa4` on `02f6095` — created **automatically by the Entire commit hook** from the active Freebuff session, then enriched by attach. All four guide milestones now have checkpoints (initial `e6e841e2def8` → pre-noon `2adb77572071` → curveball `614fa84595b2` → final `5531a5f11fa4`).
 3. **User:** Databricks live run — import notebook, upload both NDJSON files (`events.ndjson`, `events-new-format.ndjson`), run all cells, screenshot tolerance output + risk_map.
 4. **User:** final push (mirror + GitHub fork) + submission before **3:00 PM**: fork URL, SHA, mirror URL, checkpoint links, BUILDATHON.md, demo.
 
