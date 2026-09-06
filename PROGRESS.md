@@ -2,6 +2,40 @@
 
 **Event:** BTW Buildathon 2026 (6 September 2026) · **Track:** E3 — Bring Entire to a New Agent or Workflow · **Optional:** Best Use of Databricks (opted in)
 
+## Pre-Noon Stable Milestone — 2026-09-06 11:43 IST
+
+**Commit message:** `Pre-noon stable milestone: Agent Activity Universe`
+
+**Intent:** This build is **Agent Activity Universe** for BTW Buildathon Entire track E3. It solves the developer visibility gap around AI coding agents by turning Entire checkpoint/session context into an explorable product surface for understanding what agents changed, why they changed it, and where risk is accumulating.
+
+**Architecture now:** Entire checkpoints and graph context feed a data adapter, which normalizes repository/session/checkpoint data for Databricks risk scoring and analytics. The React Three Fiber frontend renders that model as a 3D universe where files are nodes, dependency/activity relationships are lines, agent activity is visible in-scene, and risk/analytics overlays are available through UI controls.
+
+**Verifiably working now:**
+- `agent-universe` has a working React Three Fiber app with file nodes, agent markers, connection lines, orbit controls, inspector panel, filters, Risk View, Analytics modal, and Activity Replay.
+- `agent-universe/src/data/adapter.ts` loads a real export when present, tries `/api/repository`, and falls back to sample data so the demo remains usable offline.
+- `databricks/ingest_and_score.py`, `databricks/events.ndjson`, and `databricks/README.md` define the Databricks ingestion and scoring path.
+- Local verification at 2026-09-06 11:43 IST: `npm test` passed 2 files / 7 tests, and `npm run build` passed production TypeScript + Vite build.
+
+**Deferred until after the Noon Curveball:**
+- Wire a live Entire export from `.entire/` data into `public/data/entire-export.json` or a backend endpoint.
+- Run the Databricks notebook live in the workspace and capture evidence.
+- Connect `/api/analytics` to a live Databricks `risk_map` result instead of relying on the frontend fallback.
+- Implement any Curveball-specific requirement and update `BUILDATHON.md` sections 5-6 with the response.
+- Do final submission verification, final checkpoint, and final commit before the 3:00 PM IST deadline.
+
+**Known risks / fragile points:**
+- Live Entire export is not wired end to end yet; the app is currently protected by a sample-data fallback.
+- Databricks code exists and sample data is present, but the notebook has not been run live in the target workspace from this session.
+- 3D relationship layout is demo-deterministic and not fully generated from live Entire Graph relationships.
+- Vite emits a large chunk warning for the Three.js bundle; acceptable for this milestone, but code-splitting is deferred.
+- Remaining Entire checkpoint creation depends on committing from an active supported agent session with Entire hooks enabled.
+
+**Assumptions for a fresh session:**
+- Work must continue in `/Users/khushisarawagi/Desktop/buildathon/external-agents-mirror`.
+- The designated build app is `agent-universe/`; the Databricks assets are in `databricks/`.
+- Synthetic sample data is intentional until a real Entire export is dropped into `agent-universe/public/data/entire-export.json`.
+- Submission deadline is 3:00 PM IST on 2026-09-06, and the Noon Curveball should be handled in a fresh post-curveball session.
+
 > **Last updated:** 6 September 2026 (~10:45, build day)
 >
 > ⚠️ **SOURCE OF TRUTH #1:** The PDF **`/Users/khushisarawagi/Downloads/What we're building.pdf`** (33 pages) is the authoritative build plan.
