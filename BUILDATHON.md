@@ -34,6 +34,21 @@ The plugin lives at `agents/entire-agent-freebuff/` with the protocol
 surface in `internal/protocol` and Freebuff logic in `internal/freebuff`
 (session layout, hooks, and a single dual-format transcript parser).
 
+## What the project is doing — the full picture
+
+This repository is the **E3 submission**, and it is one end-to-end system that makes agent work visible and explainable:
+
+**1. Capture — Entire checkpoints for a previously unsupported agent.**
+The product starts where agent work happens: in a coding-agent session. Freebuff (the free agent used to build this very project) had **no Entire support**, so its commits produced no checkpoints and the *why* behind them was lost. `agents/entire-agent-freebuff/` closes that gap through the documented External Agent protocol (see `AGENT.md`): `entire enable --agent freebuff` installs a 4-hook lifecycle registry (`.freebuff/entire-hooks.json`), and the plugin maps Freebuff's on-disk sessions (`~/.config/manicode/projects/<project>/chats/<sid>/`) into Entire sessions, transcripts and — on commit — **checkpoints with intent, prompts, files changed and open questions**. This was verified live today: the milestone commits of this very build were checkpointed from real Freebuff sessions (`614fa84595b2`, `5531a5f11fa4`, `26d2aaa0ddf0`).
+
+**2. Analyze — Databricks risk scoring.**
+`databricks/` is the analytics brain. The notebook ingests development events (classic `events.ndjson` and — after the Noon Curveball — the new JSONL session-event format `events-new-format.ndjson`), and computes agent performance, file hotspots, module failure patterns, velocity and a **per-file `risk_map`**. Risk bands (SAFE/LOW/MEDIUM/HIGH) power the product's Risk View. Two serverless runs finished `SUCCESS` today and persisted `workspace.agent_universe.risk_map` + `pipeline_run_summary` (evidence in §9).
+
+**3. Explore — the Agent Activity Universe (the demo surface).**
+`agent-universe/` is a React Three Fiber app that turns checkpoint context into a navigable 3D space: files are nodes, dependencies and activity are connections, and agents (◆ Claude, ● Codex, ▲ Copilot, ■ Aider) float near the files they touched with live `N files · M calls` tags. Clicking a node opens an inspector (agent, checkpoint intent, prompt, files changed, risk score); filters narrow by agent or module; **Activity Replay** animates the session timeline; **Risk View** recolors the universe from the Databricks risk map; and the **Analytics** panel shows agent performance, hotspots, failure patterns and velocity from the same `risk_map`. Its data adapter (`src/data/adapter.ts`) tries a live Entire export → `/api/analytics` → and finally the labelled sample dataset, so the demo never blocks.
+
+**Why the whole is greater than the parts:** the 3D universe and the Databricks scoring both *depend on Entire checkpoints existing in the first place* — which, for Freebuff, only became true because of the plugin in section 3. Capture (E3 deliverable) → analyze (Databricks) → explore (universe) is a closed loop: the tool we built produced the very checkpoints this project now visualizes.
+
 ## Entire Graph findings and verification
 
 Graph impact analysis ran **before** the Curveball implementation (required step). Live output, repo commit `2f47e69`:
@@ -99,6 +114,7 @@ cd agent-universe && npm install && npm test && npm run build
 ```
 
 **Offline demo:** open `agent-universe/demo.html`.
+**Full judge runbook (open, run, what to show, fallbacks):** `SHOWING.md`.
 
 ## Databricks use, data sources and limitations
 
@@ -108,7 +124,7 @@ Databricks is the risk/analytics layer of the companion universe: it ingests dev
 
 **Data sources:** synthetic sample events (labeled in `agent-universe/src/data/sample-data.ts`) and the Curveball fixture; no personal/customer data; no credentials in the repo. Transformations are traceable in the notebook.
 
-**Live run (user action, before 3 PM):** import `databricks/ingest_and_score.py`, upload both NDJSON files to `/FileStore/agent_universe/`, run all cells, screenshot the tolerance output + risk map (fallback evidence). Workspace/links recorded in PROGRESS.md.
+**Live run — DONE (6 Sep, serverless).** The workspace has no DBFS/FileStore (Unity Catalog), so the run used `databricks/ingest_and_score_uc.py` (imported to the workspace, fully qualified `workspace.agent_universe`) with both NDJSON files uploaded to a UC volume. Two runs finished `SUCCESS` (links in SHOWING.md §2c). Persisted results — `workspace.agent_universe.risk_map` (14 rows: classic files + Curveball fixture files) and `pipeline_run_summary` (`curveball_ingest | 18 lines | 17 known | 1 unknown skipped | 94.4% recognized`). Two real bugs were caught and fixed during the live run: the notebook referenced a `last_agent` column the live NDJSON never contains (now normalised to `agent` at ingest) and the new-format JSON decode used a `map<string,string>` schema that nested objects would break (now a tolerant `struct` schema). Full evidence and queries: `databricks/README.md` §Live run evidence and `SHOWING.md` §2c/§3 Beat 5.
 
 ## Known limitations and next steps
 **Limitations:**

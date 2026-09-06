@@ -1,4 +1,7 @@
-# Databricks Notebook — Agent Activity Universe Analytics
+# Databricks Notebook — Agent Activity Universe Analytics (Unity Catalog / Free Edition)
+# UC variant: reads NDJSON from a managed volume under the `workspace` catalog
+# (dbfs:/Volumes/workspace/agent_universe/files/) and writes tables to
+# workspace.agent_universe.* — same logic as ingest_and_score.py.
 # ----------------------------------------------------------
 # Ingests Entire development activity (NDJSON) and produces the analytics
 # that power the product's Risk View + Analytics panel:
@@ -14,11 +17,12 @@
 
 # COMMAND ----------
 # 1) Config — point at your uploaded file or Delta table
-DATABASE = "agent_universe"
+DATABASE = "workspace.agent_universe"  # fully qualified: catalog.schema (UC)
 TABLE_RAW = f"{DATABASE}.entire_events"
-CATALOG = "hive_metastore"  # Free Edition default; adjust to your catalog
+CATALOG = "workspace"  # Free Edition UC catalog (auto-created)
 
 spark.conf.set("spark.sql.shuffle.partitions", "4")
+spark.sql("USE CATALOG workspace")
 
 # COMMAND ----------
 # 2) Ingest NDJSON (upload databricks/events.ndjson or live export via UI:
@@ -26,7 +30,7 @@ spark.conf.set("spark.sql.shuffle.partitions", "4")
 from pyspark.sql.functions import col, when, lit
 
 try:
-    raw_df = spark.read.format("json").option("multiline", "false").load("/FileStore/agent_universe/events.ndjson")
+    raw_df = spark.read.format("json").option("multiline", "false").load("/Volumes/workspace/agent_universe/files/events.ndjson")
 except Exception as e:
     print("FileStore read failed, trying sample generation:", e)
     # Fallback: build a small representative table so the pipeline is demoable
@@ -130,7 +134,7 @@ KNOWN_EVENTS = {"session_started", "user_prompt", "agent_response", "file_change
                 "file_read", "usage"}
 
 try:
-    raw_new = spark.read.text("/FileStore/agent_universe/events-new-format.ndjson") \
+    raw_new = spark.read.text("/Volumes/workspace/agent_universe/files/events-new-format.ndjson") \
         .where(col("value").rlike("\\S"))
     # Tolerant struct schema: only the fields we use are decoded, so nested
     # objects/arrays on other fields (agent, input, output, usage,
