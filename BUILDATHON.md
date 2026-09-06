@@ -57,7 +57,7 @@ Graph results are evidence, not an oracle — each finding will be verified agai
 
 ## Checkpoint links and what each checkpoint proves
 
-**Repo:** GitHub fork `github.com/khushi-infinity/cli` · **Mirror:** `entire://aws-ap-south-1.entire.io/gh/khushi-infinity/cli` (India region) · **Branch:** `agent-activity-universe` · **Pushed SHA:** `3ef2f1c12`
+**Repo:** GitHub fork `github.com/khushi-infinity/external-agents` · **Mirror:** `entire://aws-ap-south-1.entire.io/gh/khushi-infinity/external-agents` (India region) · **Branch:** `agent-activity-universe` · **Pushed SHA:** `3ef2f1c12`
 
 Checkpoints are created when a commit happens during an ACTIVE agent session (hooks installed, Codex authed). Milestone commits must be made from inside a supported agent session (`codex` in the mirror clone), then verified with `entire checkpoint list`.
 
