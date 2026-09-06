@@ -1,0 +1,1 @@
+Build the Agent Activity Universe for BTW Buildathon 2026, E3 track: a 3D visualization of AI coding agents across a codebase, powered by Entire checkpoint context and Databricks analytics. Start with sample data, keep Entire central, avoid overengineering.
