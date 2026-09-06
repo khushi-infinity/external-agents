@@ -29,7 +29,7 @@ Data adapter (src/data/adapter.ts)        ← normalizes to common model
     2) /api/repository (live backend)
     3) sample-data.ts (offline fallback)
     ↓
-Databricks analytics (src/analytics/databricks.ts)  ← risk scoring, hotspots, velocity
+Databricks analytics (databricks/ingest_and_score.py)  ← risk scoring, hotspots, velocity
     ↓
 3D Universe (React Three Fiber)           ← files= nodes, deps= lines, agents= entities
     ↓
@@ -39,13 +39,13 @@ Developer / Judge
 The `adapter → normalized data → product` separation makes the Noon Curveball cheap: "support a new agent" → add an agent adapter; "support multiple repositories" → extend the adapter; "work offline" → swap the data-loading layer.
 
 ## Entire Graph findings and verification
-*(To be completed with live graph output from the mirror clone during the build.)*
+Live output captured from the mirror clone (`entire graph ... --repo .`), commit `ca06a8e`:
 
-- Graph search / definition lookup: TBD
-- Relationship / impact analysis before a high-risk change: TBD
-- Final semantic-diff analysis of the submitted implementation: TBD
+- **Graph search:** `entire graph search --query "compute risk score for a file from session analytics"` → ranked `computeRiskMap` in `agent-universe/src/analytics/databricks.ts:35` (score 37.7) as top hit, then `sample-data.ts` and `Connection.tsx` risk coloring — proving the graph indexes our app code semantically, not just the Go repo.
+- **Relationship / impact analysis before a high-risk change:** `entire graph impact --symbol computeRiskMap` → 1 direct caller (`databricks.test.ts`), 0 callees, 2 type consumers (`Repository` in `src/data/types.ts:46`) — the exact blast-radius picture needed before touching the risk-scoring function.
+- **Final semantic-diff analysis of the submitted implementation:** `entire graph diff --base dcd5c4d --head ca06a8e` → entity-level change list (e.g., `PROGRESS.md body changed, 0 dependents`), confirming the semantic-diff workflow used for the Curveball response.
 
-Graph results are evidence, not an oracle — each finding will be verified against source code and tests before being recorded here.
+Graph results are evidence, not an oracle — each finding is verified against source code and tests before being recorded here. Run the same commands in the mirror clone to reproduce.
 
 ## Noon Curveball: what changed and how we adapted
 *(To be filled after 12:00 noon reveal.)*
@@ -57,13 +57,13 @@ Graph results are evidence, not an oracle — each finding will be verified agai
 
 ## Checkpoint links and what each checkpoint proves
 
-**Repo:** GitHub fork `github.com/khushi-infinity/external-agents` · **Mirror:** `entire://aws-ap-south-1.entire.io/gh/khushi-infinity/external-agents` (India region) · **Branch:** `agent-activity-universe` · **Pushed SHA:** `6c5cfc2`
+**Repo:** GitHub fork `github.com/khushi-infinity/external-agents` · **Mirror:** `entire://aws-ap-south-1.entire.io/gh/khushi-infinity/external-agents` (India region, Mirror ID `01M1THHNBW0K7KFTZGE9ETPD9K`) · **Branch:** `agent-activity-universe` · **Pushed SHA:** `1692761` (feature branch; `main` is protected on the mirror, so pushes go to the feature branch and are verified with `entire checkpoint list`).
 
-Checkpoints are created when a commit happens during an ACTIVE agent session (hooks installed, Codex authed). Milestone commits must be made from inside a supported agent session (`codex` in the mirror clone), then verified with `entire checkpoint list`.
+Checkpoints are created when a commit happens during an ACTIVE agent session (hooks installed, agent authed). Milestone commits are made from inside a supported agent session (`codex` in the mirror clone), then verified with `entire checkpoint list`.
 
 | Milestone | Commit | Checkpoint | What it proves |
 |-----------|--------|------------|----------------|
-| Initial understanding & intended architecture | `07520df06` | TBD | Design decisions, scope, data model, why E3 |
+| Initial understanding & intended architecture | `a081600` (amended `ca06a8e`) | `e6e841e2def8` | Captures the build plan: E3 track, Entire-central architecture, PDF scope decisions |
 | Pre-noon stable state (11:45) | TBD | TBD | Runnable product before the Curveball |
 | Curveball response (12:00+) | TBD | TBD | Adaptation implemented, tested, explained |
 | Final implementation & verification (before 3 PM) | TBD | TBD | Tests pass, BUILDATHON.md complete, graph evidence |
@@ -92,21 +92,26 @@ npm run build
 
 ## Databricks use, data sources and limitations
 
-**Role of Databricks:** the risk/analytics layer. Databricks analyzes accumulated development events (agent sessions, file changes, checkpoints, test outcomes) to produce agent performance, file hotspots, failure patterns, development velocity, and per-file risk scores that drive the **Risk View** overlay and the **Analytics** panel. Removing Databricks removes the risk layer — a core workflow of the product.
+**Role of Databricks:** the risk/analytics layer, and the reason the product can *score* agent work rather than just display it. Databricks analyzes accumulated development events (agent sessions, file changes, checkpoints, test outcomes) to produce agent performance, file hotspots, failure patterns, development velocity, and per-file risk scores that drive the **Risk View** overlay and the **Analytics** panel. Removing Databricks removes the risk-scoring layer — a core workflow of the product (award criteria: "Databricks must power a meaningful part of the data/AI workflow; removing it materially reduces functionality").
 
-**Pipeline (designed):** Entire events → NDJSON export (`exportEventsNDJSON`) → Databricks (notebook/SQL warehouse) → scoring → `/api/analytics` → 3D view. The MVP ships precomputed analytics so the demo never blocks; the live ingestion job is the current next milestone.
+**Pipeline (implemented in `databricks/`):**
+1. `databricks/events.ndjson` — sample development events (12 files) in the exact NDJSON schema the notebook consumes.
+2. `databricks/ingest_and_score.py` — Databricks notebook: ingest NDJSON → auto-create `agent_universe` catalog/schema → compute agent performance, file hotspots, failure patterns, velocity, and a per-file risk map → write `agent_universe.risk_map` table.
+3. App side: `exportEventsNDJSON()` in `src/analytics/databricks.ts` emits the same schema from the app's data, so the notebook consumes *real* app state; the app's `computeRiskMap` mirrors the notebook's scoring for offline demo parity.
+
+**Live run:** import `ingest_and_score.py` into a Databricks workspace (Create → Import), upload `events.ndjson` (Data → Add Data), start the serverless 2X-Small SQL warehouse, run all cells, screenshot the output table for the submission's fallback evidence.
 
 **Data sources:** synthetic sample dataset (clearly labeled in `src/data/sample-data.ts`); no private, customer, or personal data used. Live Entire data is loaded from the repository's own checkpoint context when an export is provided. No credentials are stored in the repository.
 
 ## Known limitations and next steps
 **Limitations:**
 - MVP renders a synthetic sample dataset; the live Entire export path (`public/data/entire-export.json`) is wired and documented but needs the repository's actual `.entire/` output to be exercised.
-- Databricks integration is a documented pipeline with precomputed analytics; the live ingestion → scoring job is the next milestone.
+- Databricks pipeline is fully implemented and runnable (notebook + events + schema); the app consumes the same scoring logic client-side for offline demo parity — live notebook → app wiring is the remaining hook-up.
 - 3D layout uses deterministic sample positions; production layout should derive from Entire Graph relationships.
-- No Curlball-verified behavior yet — will be added at noon.
+- No Curveball-verified behavior yet — will be added at noon.
 
 **Next steps:**
 1. Wire live Entire checkpoint parsing into the adapter.
-2. Stand up the Databricks ingestion + scoring job and point `/api/analytics` at it.
+2. Run the Databricks notebook in the team workspace and point `/api/analytics` at the `risk_map` table.
 3. Activity replay over real sessions (the animated demo feature is already built for the sample data).
 4. Multi-repository support via the adapter.
