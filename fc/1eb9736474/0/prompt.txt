@@ -1,0 +1,45 @@
+Commit the current state of this repository as the pre-noon stable milestone for the BTW Buildathon.
+
+Before committing, write a short commit message and PROGRESS.md-style note covering:
+1. Intent: what this build is (Agent Activity Universe, Entire track E3) and what problem it solves.
+2. Architecture as it stands right now: Entire checkpoints/graph → data adapter → Databricks risk scoring → React Three Fiber 3D universe.
+3. What is verifiably working right now (be honest — only what's tested/built, not planned).
+4. What is explicitly NOT done yet and is deferred to after the Noon Curveball.
+5. Known risks or fragile points (e.g. live Entire export not wired, Databricks notebook not yet run live).
+6. Any assumptions made so far that a fresh session picking this up would need to know.
+
+Then run:
+git add .
+git commit -m "<your generated pre-noon stable milestone message>"
+
+---
+
+Now update the documentation to record this checkpoint. Do these edits directly in the repo files:
+
+1. In PROGRESS.md:
+   - In the "## 9. Strict Participant-Guide Compliance Status" table, find the row
+     "Checkpoints 2–4 (pre-noon, curveball, final)" and update it to show the
+     pre-noon checkpoint as done, with its checkpoint ID and commit SHA, while
+     leaving curveball and final marked as still pending.
+   - In "## 2. ✅ DONE — Everything Built", update the "latest SHA" reference to
+     the new pre-noon commit SHA.
+   - In "## 8. Competition Day Timeline", mark the 11:45 row as ✅ done.
+   - In "## 5. 🔴 YOUR SIDE — Tasks Only You Can Do", mark task #3
+     (Pre-noon checkpoint) as ✅ DONE.
+   - Update the "Last updated" timestamp at the top to the current time.
+
+2. In BUILDATHON.md:
+   - In the "## Checkpoint links and what each checkpoint proves" table, fill in
+     the "Pre-noon stable state (11:45)" row: Commit = the new SHA, Checkpoint =
+     the new checkpoint ID, and confirm the "What it proves" column still reads
+     something like "Runnable product before the Curveball."
+   - Update the "Pushed SHA" reference near the top (in the Checkpoint links intro
+     line) to the new commit SHA.
+
+Use the exact checkpoint ID and commit SHA from the `entire checkpoint list` output
+above — do not invent or guess any values. Show me a diff of both files before
+saving so I can confirm it's correct, then save.
+
+---
+
+Yes, apply the diff and save both files.
