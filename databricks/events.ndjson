@@ -1,0 +1,12 @@
+{"event_type":"file_change","file":"src/auth/service.ts","agent":"claude","change_count":17,"risk_score":82,"last_checkpoint":"CP-1842"}
+{"event_type":"file_change","file":"src/auth/middleware.ts","agent":"claude","change_count":8,"risk_score":45,"last_checkpoint":null}
+{"event_type":"file_change","file":"src/auth/routes.ts","agent":"codex","change_count":12,"risk_score":30,"last_checkpoint":null}
+{"event_type":"file_change","file":"src/payments/service.ts","agent":"codex","change_count":14,"risk_score":71,"last_checkpoint":"CP-1835"}
+{"event_type":"file_change","file":"src/payments/api.ts","agent":"codex","change_count":9,"risk_score":55,"last_checkpoint":null}
+{"event_type":"file_change","file":"src/database/client.ts","agent":"aider","change_count":9,"risk_score":60,"last_checkpoint":"CP-1830"}
+{"event_type":"file_change","file":"src/database/models.ts","agent":"claude","change_count":6,"risk_score":35,"last_checkpoint":null}
+{"event_type":"file_change","file":"src/api/routes.ts","agent":"copilot","change_count":11,"risk_score":40,"last_checkpoint":null}
+{"event_type":"file_change","file":"src/api/validators.ts","agent":"copilot","change_count":4,"risk_score":20,"last_checkpoint":null}
+{"event_type":"file_change","file":"tests/auth.test.ts","agent":"claude","change_count":7,"risk_score":15,"last_checkpoint":null}
+{"event_type":"file_change","file":"tests/payments.test.ts","agent":"codex","change_count":5,"risk_score":25,"last_checkpoint":null}
+{"event_type":"file_change","file":"src/config.ts","agent":"copilot","change_count":3,"risk_score":10,"last_checkpoint":null}
