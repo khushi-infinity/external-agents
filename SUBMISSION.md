@@ -12,10 +12,10 @@
 |---|---|
 | **GitHub fork (primary)** | `https://github.com/khushi-infinity/external-agents` |
 | Branch | `main` |
-| Final SHA | `FORK_SHA_PLACEHOLDER` |
+| Final SHA | `0eb108b` |
 | **Entire mirror** | `entire://aws-ap-south-1.entire.io/gh/khushi-infinity/external-agents` |
 | Branch | `agent-activity-universe` |
-| Final SHA | `MIRROR_SHA_PLACEHOLDER` |
+| Final SHA | `0ed3d25` |
 | Mirror ID | `01M1THHNBW0K7KFTZGE9ETPD9K` (region `aws-ap-south-1`, India) |
 | BUILDATHON.md | repo root (11 sections — full build story) |
 | PROGRESS.md | repo root (status + evidence log) |
