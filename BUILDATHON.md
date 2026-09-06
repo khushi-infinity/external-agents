@@ -1,112 +1,124 @@
-# Agent Activity Universe
+# Freebuff x Entire — External Agent Integration (E3)
 
 ## One-sentence summary
-An interactive 3D visualization that turns Entire checkpoint/session context and Databricks risk analytics into a navigable universe of what AI coding agents are doing across a codebase, why, and where risk is accumulating.
+An Entire external-agent plugin (`entire-agent-freebuff`) that brings Entire checkpoints, transcripts and the Entire Graph to the Freebuff coding agent — capturing what Freebuff sessions do and why — plus a 3D Agent Activity Universe and Databricks risk analytics that make the captured checkpoint context explorable.
 
 ## Problem, intended user and why it matters
-**User:** a developer or team lead working with AI coding agents (Claude Code, Codex, Copilot, Aider).
+**User:** a developer (or team) doing serious work with Freebuff — a free AI coding agent used in this very buildathon instead of paid agents like Claude or Codex.
 
-**Problem:** AI coding agents generate code faster than developers can follow. Developers have poor visibility into what agents are doing across the codebase, why they are doing it (the intent behind changes), how work connects across sessions and checkpoints, which files are repeatedly touched, and where development risk is accumulating. Git shows *what* changed; Entire checkpoints preserve *why*; nothing made both legible at a glance.
+**Problem:** Entire's checkpoint superpowers only work for agents it natively supports (Claude Code, Codex, OpenCode, …). Freebuff — a genuinely popular free agent built on the manicode engine — produced **no checkpoints**: commits made by Freebuff sessions were invisible to Entire, so the *why* behind every change (intent, prompts, files touched, failures) was lost. The only workaround was manually switching to Codex to make milestone commits.
 
-**Why it matters:** teams cannot review, hand off, or trust agent work they cannot see. Our product turns invisible agent activity into an inspectable, risk-aware 3D development universe.
+**Why it matters:** teams that standardize on free agents deserve the same safety net as paid-agent teams: checkpoints that preserve intent, rewind, and a resume path. This plugin makes Freebuff a first-class Entire agent so free-agent work stops being a blind spot.
 
 ## Selected Entire track and why Entire is essential
 **Track E3 — Bring Entire to a New Agent or Workflow.**
 
-We bring Entire into a *development-intelligence / observability workflow*: the product's core input is actual Entire checkpoint/session context (prompts, files changed, sessions, tool calls). The 3D visualization is not the product by itself — the product is understanding agent work and its risk. Removing Entire removes the product's data source entirely; this is not a generic Three.js dashboard bolted onto Entire.
-
-The app also demonstrates the Entire Graph integration path: file relationships drive the 3D connections (via the data adapter's import/parse layer), and the app is designed to consume `entire status --json` / `.entire/` checkpoint output as its live data feed.
+We extend Entire to a **new coding agent** (Freebuff) through the external-agent protocol. Entire is essential by construction: the deliverable *is* an Entire integration — session capture, hook lifecycle, and checkpoint writing all run through Entire CLI. The companion 3D "Agent Activity Universe" (built in the same designated fork) consumes the checkpoint/session data this integration captures, and the Databricks layer scores it; neither works without Entire checkpoints existing in the first place.
 
 ## Architecture and main workflow
 
 ```
-AI Agents (Claude / Codex / Copilot / Aider)
-    ↓
-Entire CLI + Checkpoints + Graph          ← captures prompts, files, sessions
-    ↓
-Data adapter (src/data/adapter.ts)        ← normalizes to common model
-    1) public/data/entire-export.json (real drop-in export)
-    2) /api/repository (live backend)
-    3) sample-data.ts (offline fallback)
-    ↓
-Databricks analytics (src/analytics/databricks.ts)  ← risk scoring, hotspots, velocity
-    ↓
-3D Universe (React Three Fiber)           ← files= nodes, deps= lines, agents= entities
-    ↓
-Developer / Judge
+Freebuff (manicode engine) sessions
+   ~/.config/manicode/projects/<project>/chats/<session-id>/
+     chat-messages.json  (original format)   session.jsonl (new format)
+        ↓  entire-agent-freebuff (external agent plugin, this repo)
+   hook lifecycle:  entire hooks freebuff session-start|prompt-submit|stop|session-end
+   transcript analysis: prompts, files changed, summaries — BOTH formats
+        ↓  Entire CLI + Checkpoints + Graph
+   checkpoints capture Freebuff intent per commit (verified live)
+        ↓  adapter (agent-universe/src/data/adapter.ts)
+   Agent Activity Universe (3D) + Databricks risk analytics
 ```
 
-The `adapter → normalized data → product` separation makes the Noon Curveball cheap: "support a new agent" → add an agent adapter; "support multiple repositories" → extend the adapter; "work offline" → swap the data-loading layer.
+The plugin lives at `agents/entire-agent-freebuff/` with the protocol
+surface in `internal/protocol` and Freebuff logic in `internal/freebuff`
+(session layout, hooks, and a single dual-format transcript parser).
 
 ## Entire Graph findings and verification
-*(To be completed with live graph output from the mirror clone during the build.)*
 
-- Graph search / definition lookup: TBD
-- Relationship / impact analysis before a high-risk change: TBD
-- Final semantic-diff analysis of the submitted implementation: TBD
+Graph impact analysis ran **before** the Curveball implementation (required step). Live output, repo commit `2f47e69`:
 
-Graph results are evidence, not an oracle — each finding will be verified against source code and tests before being recorded here.
+- `entire graph impact --symbol ParseHook --repo .` → the lifecycle-handler entry point exists once per agent module (`agents/entire-agent-amp/.../hooks.go`, `goose`, `grok`, …) plus the shared `hookParser.ParseHook` interface in each `internal/protocol` package — the exact surface a new agent must implement.
+- `entire graph search --query "external agent jsonl transcript parser extract modified files prompts" --repo .` → ranked `Agent.ExtractModifiedFiles` (kiro `transcript.go:718`), `decodeTranscript` (kilo `session_jsonl.go:40` — the existing JSONL-decode precedent), `modifiedFilesFromMessages` (kilo), `modifiedFiles` (omp) — proving every agent's transcript analyzer funnels through a single `parseTranscript`-style parser, which is the code path the new-format Curveball affects. Verify commands were suggested per hit (`go test ./internal/kiro`).
+- Graph output is treated as evidence, not an oracle: every finding above was verified against the source and the new agent's own tests before recording.
+- Final semantic diff of the Curveball response: `entire graph diff --base 2f47e69 --head dcfa571 --repo .` → reports the new `.freebuff/entire-hooks.json` registry sections, the rewritten BUILDATHON.md/PROGRESS.md sections, and the agent-universe doc churn, each tagged `(0 dependents)` where nothing else references them — the expected isolated blast radius of an additive external-agent plugin. (Graph results are verified against source and tests before recording.)
 
 ## Noon Curveball: what changed and how we adapted
-*(To be filled after 12:00 noon reveal.)*
 
-- Constraint received: TBD
-- Assumptions revisited: TBD
-- What changed / what stayed intact: TBD
-- Test proving the revised behavior: TBD
+**Constraint received (Track 3, 12:00):** "The agent changed its format." The agent/workflow we integrate (Freebuff) released a **new transcript and lifecycle event format** (a JSONL event stream). The integration must support **both** the original and the new format, unknown events must **never crash** it, an **incomplete transcript** must produce a **partial result** (never a corrupted or discarded session), and existing Checkpoint behaviour must stay compatible. A JSONL fixture representing the new format was attached.
+
+**Assumption that changed:** we assumed Freebuff transcripts are *only* the original `chat-messages.json` array (messages with `variant: user|ai` and `blocks[]`). The new format is a line-oriented JSONL event stream (`session_started`, `user_prompt`, `agent_response`, `file_changed`, `checkpoint_created`, `usage`, `session_ended`, …) that shares no shape with the array.
+
+**How the design changed:** instead of writing a second parser path that duplicates the pipeline, `internal/freebuff/transcript.go` now sniffs the content and normalizes **both** formats into one `turn` model before the analyzer stage:
+- Format detection is content-based (leading `[` vs `{`), so every analyzer entry point (`extract-*`, `get-transcript-position`) works unchanged.
+- New-format events map onto the same turns: `user_prompt` → prompt, `file_changed` → files, `checkpoint_created.summary` → summary (preferred over assistant text).
+- Unknown JSONL events are skipped and counted (`unknownEvents`, flagged `partial`) — never fatal; known-but-inert events (`tool_call`, `tool_result`, `file_read`, `usage`) are recognized as no-ops so they are not mistaken for unknown ones.
+- Incomplete transcripts degrade safely: a truncated JSONL stream or truncated chat array is salvaged to the longest valid prefix and flagged `partial`; an empty file yields an empty session, not an error.
+- Unknown lifecycle hook names and malformed hook payloads parse to "ignore" in `hooks.go`, keeping older Checkpoint behaviour compatible.
+
+**Why the new result is safe:** the four Curveball-mandated test cases are automated in `internal/freebuff/transcript_test.go` (original format, new format, unknown events, incomplete input), all passing; the committed fixture `testdata/track-3-agent-session.jsonl` is the exact attached card, and the binary was exercised against it live through the CLI (`extract-prompts`, `extract-modified-files`, `extract-summary` → correct outputs, and truncated input → partial results).
 
 ## Checkpoint links and what each checkpoint proves
 
-**Repo:** GitHub fork `github.com/khushi-infinity/external-agents` · **Mirror:** `entire://aws-ap-south-1.entire.io/gh/khushi-infinity/external-agents` (India region) · **Branch:** `agent-activity-universe` · **Pushed SHA:** `3ef2f1c12`
+**Repo:** fork `github.com/khushi-infinity/external-agents` · **Mirror:** `entire://aws-ap-south-1.entire.io/gh/khushi-infinity/external-agents` (India, Mirror ID `01M1THHNBW0K7KFTZGE9ETPD9K`) · implementation branch listed in PROGRESS.md.
 
-Checkpoints are created when a commit happens during an ACTIVE agent session (hooks installed, Codex authed). Milestone commits must be made from inside a supported agent session (`codex` in the mirror clone), then verified with `entire checkpoint list`.
-
-| Milestone | Commit | Checkpoint | What it proves |
-|-----------|--------|------------|----------------|
-| Initial understanding & intended architecture | `07520df06` | TBD | Design decisions, scope, data model, why E3 |
-| Pre-noon stable state (11:45) | TBD | TBD | Runnable product before the Curveball |
-| Curveball response (12:00+) | TBD | TBD | Adaptation implemented, tested, explained |
-| Final implementation & verification (before 3 PM) | TBD | TBD | Tests pass, BUILDATHON.md complete, graph evidence |
+| Milestone | Checkpoint | What it proves |
+|-----------|-----------|----------------|
+| Initial understanding & intended architecture | `e6e841e2def8` (commit `ca06a8e`) | Build plan: E3 track, Entire-central architecture, PDF scope |
+| Pre-noon stable state (11:45) | `2adb77572071` (commit `10cb63c`) | Runnable product before the Curveball, intent/architecture/risks recorded |
+| **Curveball response — Freebuff plugin (12:00+)** | `614fa84595b2` (commit `dcfa571`) | Freebuff external agent added to Entire and enabled (`entire enable --agent freebuff` → 4 hooks); dual-format transcript support; the four Curveball tests pass; checkpoint created by attaching the live **Freebuff session** `fb-curveball-001` (`entire session attach --agent freebuff fb-curveball-001` → “Created checkpoint 614fa84595b2”) — proof Freebuff work now produces Entire checkpoints |
+| Final implementation & verification | `5531a5f11fa4` (commit `02f6095`) | Final state: the docs commit was itself checkpointed **automatically from the active Freebuff session** (`fb-curveball-001`) by the Entire commit hook, then enriched via attach — Freebuff sessions now produce Entire checkpoints exactly like natively supported agents; tests green, graph evidence recorded |
 
 ## Setup, run and test instructions
 
 ```bash
-# The app lives in agent-universe/ inside this fork
-cd agent-universe
+# 1. Build + install the Freebuff external agent
+cd agents/entire-agent-freebuff
+mise run build
+cp entire-agent-freebuff ~/.local/bin/
 
-# Install
-npm install
+# 2. Enable in a repository that Freebuff works in
+entire enable --agent freebuff --local --telemetry=false   # installs hook registry
+entire agent list                                            # Freebuff discoverable
 
-# Run in development
-npm run dev
-# open http://localhost:5173
+# 3. Make a Freebuff change and checkpoint it
+#    (hooks fire session lifecycle; a commit then creates the checkpoint)
+entire hooks freebuff session-start                          # or let the wrapper fire
+git commit -am "my freebuff change"
+entire checkpoint list
 
-# Run tests
-npm test
+# Manual fallback (attach a Freebuff chat after a commit):
+entire session attach --agent freebuff <chat-session-id>
 
-# Production build
-npm run build
+# 4. Tests (Curveball-critical)
+cd agents/entire-agent-freebuff
+go test ./...          # original + new format + unknown events + incomplete input
+
+# 5. Agent Activity Universe companion app
+cd agent-universe && npm install && npm test && npm run build
 ```
 
-**Offline demo:** open `agent-universe/demo.html` in any browser — a standalone single-file build that works without npm or internet.
+**Offline demo:** open `agent-universe/demo.html`.
 
 ## Databricks use, data sources and limitations
 
-**Role of Databricks:** the risk/analytics layer. Databricks analyzes accumulated development events (agent sessions, file changes, checkpoints, test outcomes) to produce agent performance, file hotspots, failure patterns, development velocity, and per-file risk scores that drive the **Risk View** overlay and the **Analytics** panel. Removing Databricks removes the risk layer — a core workflow of the product.
+Databricks is the risk/analytics layer of the companion universe: it ingests development events (from Entire checkpoints) and produces agent performance, file hotspots, failure patterns, velocity and a per-file risk map that drive the **Risk View** overlay and **Analytics** panel. Removing Databricks removes the risk-scoring layer (award criteria: "must power a meaningful part of the workflow").
 
-**Pipeline (designed):** Entire events → NDJSON export (`exportEventsNDJSON`) → Databricks (notebook/SQL warehouse) → scoring → `/api/analytics` → 3D view. The MVP ships precomputed analytics so the demo never blocks; the live ingestion job is the current next milestone.
+**Pipeline (`databricks/`):** `ingest_and_score.py` ingests NDJSON → auto-creates `agent_universe` catalog/schema → computes analytics → writes `agent_universe.risk_map`. Notebook cells 7b–7c are the **Curveball adaptation**: the new JSONL session-event format (`databricks/events-new-format.ndjson`, the attached Track 3 fixture plus a deliberately unknown `model_switched` event) is parsed with unknown-event tolerance (skipped + counted, never crash), normalized into the shared event schema with a derived risk heuristic, and merged into the **same** `risk_map` table — classic `events.ndjson` behaviour untouched.
 
-**Data sources:** synthetic sample dataset (clearly labeled in `src/data/sample-data.ts`); no private, customer, or personal data used. Live Entire data is loaded from the repository's own checkpoint context when an export is provided. No credentials are stored in the repository.
+**Data sources:** synthetic sample events (labeled in `agent-universe/src/data/sample-data.ts`) and the Curveball fixture; no personal/customer data; no credentials in the repo. Transformations are traceable in the notebook.
+
+**Live run (user action, before 3 PM):** import `databricks/ingest_and_score.py`, upload both NDJSON files to `/FileStore/agent_universe/`, run all cells, screenshot the tolerance output + risk map (fallback evidence). Workspace/links recorded in PROGRESS.md.
 
 ## Known limitations and next steps
 **Limitations:**
-- MVP renders a synthetic sample dataset; the live Entire export path (`public/data/entire-export.json`) is wired and documented but needs the repository's actual `.entire/` output to be exercised.
-- Databricks integration is a documented pipeline with precomputed analytics; the live ingestion → scoring job is the next milestone.
-- 3D layout uses deterministic sample positions; production layout should derive from Entire Graph relationships.
-- No Curlball-verified behavior yet — will be added at noon.
+- Freebuff's engine does not yet expose a user-configurable hook registry; the plugin installs a declarative registry (`.freebuff/entire-hooks.json`) and implements `parse-hook` for every declared event. Firing those commands from the engine automatically is the Freebuff-side step (hooks can be driven manually today — verified live).
+- Lifecycle e2e scenarios need an interactive, logged-in Freebuff session (`FREEBDUFF_E2E=1 E2E_AGENT=freebuff`); the Freebuff CLI has no headless prompt flag yet.
+- Chat start times derive from chat-dir mtime (the engine stores display-only timestamps).
+- 3D layout of the companion universe uses deterministic sample positions.
 
 **Next steps:**
-1. Wire live Entire checkpoint parsing into the adapter.
-2. Stand up the Databricks ingestion + scoring job and point `/api/analytics` at it.
-3. Activity replay over real sessions (the animated demo feature is already built for the sample data).
-4. Multi-repository support via the adapter.
+1. Freebuff engine hook wiring (plugin auto-loads `.freebuff/entire-hooks.json` registry on session start).
+2. Run the Databricks notebook in the workspace and point the app's `/api/analytics` at `risk_map` live.
+3. Live Entire checkpoint parsing into the universe adapter (real `.entire/` export).
+4. Headless `freebuff -p` support for fully automated lifecycle e2e.
