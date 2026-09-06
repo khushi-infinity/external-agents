@@ -2,7 +2,7 @@
 
 **Event:** BTW Buildathon 2026 (6 September 2026) · **Track:** E3 — Bring Entire to a New Agent or Workflow · **Optional:** Best Use of Databricks (opted in)
 
-> **Last updated:** 6 September 2026 (~13:35, curveball window — Freebuff checkpoints VERIFIED)
+> **Last updated:** 6 September 2026 (~13:50 — Databricks live run DONE, app verified running, show guide added)
 >
 > ⚠️ **SOURCE OF TRUTH #1:** `/Users/khushisarawagi/Downloads/What we're building.pdf` (authoritative build plan).
 > ⚠️ **SOURCE OF TRUTH #2:** `/Users/khushisarawagi/Downloads/BTW Buildathon 2026 - Participant Guide.pdf` (strict rules — submit by **3:00 PM IST**, implementation in the Entire-mirror clone, 4 checkpoints, graph evidence, 10-section BUILDATHON.md).
@@ -50,16 +50,17 @@ Agent Activity Universe (React Three Fiber)  ←→  Databricks risk analytics (
 ## 4. 🔜 REMAINING (before 3 PM)
 1. ✅ Curveball checkpoint: `614fa84595b2` on `dcfa571` (Freebuff session `fb-curveball-001`).
 2. ✅ Final verification checkpoints: `5531a5f11fa4` on `02f6095` and `26d2aaa0ddf0` on `0619daa` (branch tip) — both created **automatically by the Entire commit hook** from the active Freebuff session, enriched by attach. All four guide milestones have checkpoints (initial `e6e841e2def8` → pre-noon `2adb77572071` → curveball `614fa84595b2` → final `26d2aaa0ddf0` on `0619daa`). Pushed + synced to origin.
-3. **User:** Databricks live run — import notebook, upload both NDJSON files (`events.ndjson`, `events-new-format.ndjson`), run all cells, screenshot tolerance output + risk_map.
-4. **User:** final push (mirror + GitHub fork) + submission before **3:00 PM**: fork URL, SHA, mirror URL, checkpoint links, BUILDATHON.md, demo.
+3. ✅ Databricks live run DONE (serverless, UC workspace) — two `SUCCESS` runs; `workspace.agent_universe.risk_map` (14 rows) + `pipeline_run_summary` (`18 / 17 known / 1 unknown skipped / 94.4% recognized`) persisted; two real notebook bugs fixed during the run (`last_agent`→`agent` normalisation, tolerant struct JSON decode). Evidence in `databricks/README.md` + `SHOWING.md` §2c.
+4. ✅ Companion app verified running — `npm run build` clean, 7/7 vitest tests, 3D app live in preview (Risk View, Analytics panel, filters all working).
+5. **User:** final push (mirror + GitHub fork) + submission before **3:00 PM**: fork URL, SHA, mirror URL, checkpoint links, BUILDATHON.md, demo. Full judge runbook in `SHOWING.md`.
 
 ## 5. 🔴 YOUR SIDE — Tasks Only You Can Do
 | # | Task | When | How |
 |---|------|------|-----|
 | 1 | Mirror fork (India) + graph + hooks | ✅ done | Mirror ID `01M1THHNBW0K7KFTZGE9ETPD9K`, branch per §6 |
-| 2 | Databricks workspace run | before 3 PM | import `databricks/ingest_and_score.py` → upload `events.ndjson` + `events-new-format.ndjson` → run all cells → screenshot |
+| 2 | Databricks workspace run | ✅ done (13:4x) | serverless UC run → `risk_map` + `pipeline_run_summary`; evidence in `databricks/README.md` + `SHOWING.md` |
 | 3 | Final push + submission | before 3 PM | push branch, record SHA, checkpoint links, submit track E3 |
-| 4 | Fallback screenshot/recording | before 3 PM | demo.html walkthrough + Databricks output |
+| 4 | Fallback screenshot/recording | before 3 PM | demo.html walkthrough + Databricks output (SHOWING.md §4) |
 
 ## 6. 📊 Submission state
 - **Implementation clone:** `external-agents-mirror/` (Entire mirror clone; origin `entire://aws-ap-south-1.entire.io/gh/khushi-infinity/external-agents`).

@@ -23,6 +23,8 @@ Agents now also emit a **new JSONL session-event format** (`session_started`, `u
 - Cells 7b–7c parse the new format, **count and skip unknown event types** (never crash), normalize `file_changed` records into the same event schema with a derived risk heuristic, and merge both formats into the **same** `agent_universe.risk_map` table.
 - Classic behaviour is untouched: cells 1–7 run exactly as before on original-format data.
 - The run prints the tolerance evidence (unknown events skipped / recognized %) so the adapted workflow is verifiable.
+- Column names are normalised defensively (`last_agent` → `agent`) and the new-format JSON is decoded with a **tolerant struct schema**, so nested objects on untouched fields (`agent`, `input`, `output`, `usage`, `open_questions`, …) never break a line — only genuinely unknown *event types* are skipped and counted.
+- A final cell persists a machine-readable summary to `agent_universe.pipeline_run_summary` so the tolerance outcome is queryable evidence.
 
 ## Setup (5 minutes, in your Databricks workspace)
 
@@ -30,6 +32,7 @@ Agents now also emit a **new JSONL session-event format** (`session_started`, `u
 2. **Create a serverless SQL warehouse** (Free Edition: one 2X-Small). Start it.
 3. **Import the notebook:**
    - Workspace → Create → Import → upload `databricks/ingest_and_score.py`
+   - **Unity Catalog–only workspaces** (no `/FileStore`): import `databricks/ingest_and_score_uc.py` instead, and point it at a UC volume (see step 4b). It uses a fully qualified `workspace.agent_universe` database.
 4. **Upload the events data:**
    - Option A (recommended): from the app, export real events:
      ```js
@@ -37,8 +40,27 @@ Agents now also emit a **new JSONL session-event format** (`session_started`, `u
      // or use the sample at databricks/events.ndjson
      ```
    - Data → Add Data → upload `databricks/events.ndjson` **and** `databricks/events-new-format.ndjson` to `/FileStore/agent_universe/`
+   - 4b (UC workspaces): create catalog `workspace` (or reuse yours), schema `agent_universe`, volume `files`, then `databricks fs cp` both NDJSON files to `dbfs:/Volumes/workspace/agent_universe/files/`
 5. **Run all cells** in the notebook (serverless compute). It writes the `agent_universe.risk_map` table.
 6. **Verify:** the notebook displays file hotspots, module risk, agent performance, velocity, and the risk map.
+
+## Live run evidence (serverless, 6 Sep 2026)
+
+Ran end-to-end on a **Unity Catalog serverless** workspace via `databricks jobs submit` (notebook task → serverless compute). Two successful runs after fixing a pre-existing schema bug (the notebook SQL referenced `last_agent`, which the live NDJSON never contains — now normalised at ingest):
+
+| Item | Value |
+|---|---|
+| Successful job runs | `628954233613995`, `128947458769841` → `result_state: SUCCESS` |
+| Imported notebook | `/Workspace/Users/<you>/Agent Activity Universe/ingest_and_score_uc` |
+| Tables written | `workspace.agent_universe.risk_map`, `workspace.agent_universe.pipeline_run_summary` |
+| `pipeline_run_summary` row | `curveball_ingest` · 18 new-format lines · 17 known · **1 unknown skipped** · **94.4% recognized** |
+| `risk_map` rows | 14 (classic files **+** curveball fixture files `src/checkout/apply_coupon.ts`→27 changes, `tests/checkout/apply_coupon.test.ts`→71) |
+
+Queryable evidence:
+```sql
+SELECT * FROM workspace.agent_universe.pipeline_run_summary;        -- 18 / 17 / 1 / 94.4
+SELECT file, risk_score, change_count FROM workspace.agent_universe.risk_map ORDER BY risk_score DESC;
+```
 
 ## The analytics contract (what the frontend consumes)
 
