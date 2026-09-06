@@ -11,19 +11,3 @@ Before committing, write a short commit message and PROGRESS.md-style note cover
 Then run:
 git add .
 git commit -m "<your generated pre-noon stable milestone message>"
-
----
-
-Commit the current state of this repository as the pre-noon stable milestone for the BTW Buildathon.
-
-Before committing, write a short commit message and PROGRESS.md-style note covering:
-1. Intent: what this build is (Agent Activity Universe, Entire track E3) and what problem it solves.
-2. Architecture as it stands right now: Entire checkpoints/graph → data adapter → Databricks risk scoring → React Three Fiber 3D universe.
-3. What is verifiably working right now (be honest — only what's tested/built, not planned).
-4. What is explicitly NOT done yet and is deferred to after the Noon Curveball.
-5. Known risks or fragile points (e.g. live Entire export not wired, Databricks notebook not yet run live).
-6. Any assumptions made so far that a fresh session picking this up would need to know.
-
-Then run:
-git add .
-git commit -m "<your generated pre-noon stable milestone message>"
