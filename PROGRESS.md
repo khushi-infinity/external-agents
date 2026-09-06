@@ -52,7 +52,7 @@ Agent Activity Universe (React Three Fiber)  ←→  Databricks risk analytics (
 2. ✅ Final verification checkpoints: `5531a5f11fa4` on `02f6095` and `26d2aaa0ddf0` on `0619daa` (branch tip) — both created **automatically by the Entire commit hook** from the active Freebuff session, enriched by attach. All four guide milestones have checkpoints (initial `e6e841e2def8` → pre-noon `2adb77572071` → curveball `614fa84595b2` → final `26d2aaa0ddf0` on `0619daa`). Pushed + synced to origin.
 3. ✅ Databricks live run DONE (serverless, UC workspace) — two `SUCCESS` runs; `workspace.agent_universe.risk_map` (14 rows) + `pipeline_run_summary` (`18 / 17 known / 1 unknown skipped / 94.4% recognized`) persisted; two real notebook bugs fixed during the run (`last_agent`→`agent` normalisation, tolerant struct JSON decode). Evidence in `databricks/README.md` + `SHOWING.md` §2c.
 4. ✅ Companion app verified running — `npm run build` clean, 7/7 vitest tests, 3D app live in preview (Risk View, Analytics panel, filters all working).
-5. ✅ Final push DONE (13:5x): mirror `agent-activity-universe` @ `655a526` (auto-checkpoint `9d720fabaf1e`), GitHub fork `main` @ `1037414`.
+5. ✅ Final push DONE (13:29): mirror `agent-activity-universe` tip `260aa8a` (checkpoint `9d720fabaf1e` on `655a526`, which is on the branch), GitHub fork `main` tip `2834194`.
 6. **User:** submit before **3:00 PM**: fork URL, SHA, mirror URL, checkpoint links, BUILDATHON.md, demo. Full judge runbook in `SHOWING.md`.
 
 ## 5. 🔴 YOUR SIDE — Tasks Only You Can Do
