@@ -202,7 +202,7 @@ Developer / Judge
 | `entire enable` checkpoints | ✅ enabled, sync to origin; hooks installed via `entire doctor --force` |
 | `entire plugin install graph` | ✅ graph v0.4.0 installed |
 | `entire graph init-agents --repo .` | ✅ wrote .entire/graph-agent.md + AGENTS.md |
-| Implementation lives in the designated fork | ✅ agent-universe/ inside cli-mirror, pushed to branch `agent-activity-universe` (SHA 3ef2f1c12) |
+| Implementation lives in the designated fork | ✅ agent-universe/ inside cli-mirror, pushed to branch `agent-activity-universe` (SHA 6c5cfc2) |
 | Checkpoint 1: initial understanding | 🔲 requires a commit during an ACTIVE agent session (Codex is installed + logged in) |
 | Checkpoints 2–4 (pre-noon, curveball, final) | 🔲 user action at milestones |
 | Tests covering critical behavior | ✅ 7 vitest tests passing (adapter, timeline, risk, NDJSON) |
