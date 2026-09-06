@@ -41,7 +41,7 @@ Graph impact analysis ran **before** the Curveball implementation (required step
 - `entire graph impact --symbol ParseHook --repo .` → the lifecycle-handler entry point exists once per agent module (`agents/entire-agent-amp/.../hooks.go`, `goose`, `grok`, …) plus the shared `hookParser.ParseHook` interface in each `internal/protocol` package — the exact surface a new agent must implement.
 - `entire graph search --query "external agent jsonl transcript parser extract modified files prompts" --repo .` → ranked `Agent.ExtractModifiedFiles` (kiro `transcript.go:718`), `decodeTranscript` (kilo `session_jsonl.go:40` — the existing JSONL-decode precedent), `modifiedFilesFromMessages` (kilo), `modifiedFiles` (omp) — proving every agent's transcript analyzer funnels through a single `parseTranscript`-style parser, which is the code path the new-format Curveball affects. Verify commands were suggested per hit (`go test ./internal/kiro`).
 - Graph output is treated as evidence, not an oracle: every finding above was verified against the source and the new agent's own tests before recording.
-- Final semantic diff of the submitted implementation: `entire graph diff` (run at the end; SHA recorded in the checkpoint section).
+- Final semantic diff of the Curveball response: `entire graph diff --base 2f47e69 --head dcfa571 --repo .` → reports the new `.freebuff/entire-hooks.json` registry sections, the rewritten BUILDATHON.md/PROGRESS.md sections, and the agent-universe doc churn, each tagged `(0 dependents)` where nothing else references them — the expected isolated blast radius of an additive external-agent plugin. (Graph results are verified against source and tests before recording.)
 
 ## Noon Curveball: what changed and how we adapted
 
@@ -66,8 +66,8 @@ Graph impact analysis ran **before** the Curveball implementation (required step
 |-----------|-----------|----------------|
 | Initial understanding & intended architecture | `e6e841e2def8` (commit `ca06a8e`) | Build plan: E3 track, Entire-central architecture, PDF scope |
 | Pre-noon stable state (11:45) | `2adb77572071` (commit `10cb63c`) | Runnable product before the Curveball, intent/architecture/risks recorded |
-| **Curveball response — Freebuff plugin (12:00+)** | `_id_` (commit `_sha_`) | Freebuff external agent added to Entire: hooks installed, dual-format transcript support, curveball tests pass; checkpoint captured **from a Freebuff session** (proof Freebuff work now produces Entire checkpoints) |
-| Final implementation & verification | `_id_` (commit `_sha_`) | BUILDATHON.md complete, tests + graph evidence recorded |
+| **Curveball response — Freebuff plugin (12:00+)** | `614fa84595b2` (commit `dcfa571`) | Freebuff external agent added to Entire and enabled (`entire enable --agent freebuff` → 4 hooks); dual-format transcript support; the four Curveball tests pass; checkpoint created by attaching the live **Freebuff session** `fb-curveball-001` (`entire session attach --agent freebuff fb-curveball-001` → “Created checkpoint 614fa84595b2”) — proof Freebuff work now produces Entire checkpoints |
+| Final implementation & verification | `_id_` (commit `_sha_`) | Final state: all tests green, graph evidence recorded, docs complete |
 
 ## Setup, run and test instructions
 

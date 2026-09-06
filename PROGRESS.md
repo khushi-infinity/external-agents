@@ -2,7 +2,7 @@
 
 **Event:** BTW Buildathon 2026 (6 September 2026) · **Track:** E3 — Bring Entire to a New Agent or Workflow · **Optional:** Best Use of Databricks (opted in)
 
-> **Last updated:** 6 September 2026 (~13:10, curveball window)
+> **Last updated:** 6 September 2026 (~13:35, curveball window — Freebuff checkpoints VERIFIED)
 >
 > ⚠️ **SOURCE OF TRUTH #1:** `/Users/khushisarawagi/Downloads/What we're building.pdf` (authoritative build plan).
 > ⚠️ **SOURCE OF TRUTH #2:** `/Users/khushisarawagi/Downloads/BTW Buildathon 2026 - Participant Guide.pdf` (strict rules — submit by **3:00 PM IST**, implementation in the Entire-mirror clone, 4 checkpoints, graph evidence, 10-section BUILDATHON.md).
@@ -28,6 +28,12 @@ The **E3 deliverable is the `entire-agent-freebuff` external-agent plugin** in `
 
 ### Curveball response
 - Graph impact analysis run before editing (see BUILDATHON.md §5). Implementation + tests as above. Databricks pipeline adapted (notebook cells 7b–7c tolerate the new format, unknown events skipped; `events-new-format.ndjson` fixture added).
+- Final semantic diff captured: `entire graph diff --base 2f47e69 --head dcfa571` (see BUILDATHON.md §5).
+
+### ✅ Freebuff checkpoints — VERIFIED LIVE
+- Commit `dcfa571` (curveball response) + **checkpoint `614fa84595b2`** created by attaching the real **Freebuff session** `fb-curveball-001`: `entire session attach --agent freebuff fb-curveball-001` → “Created checkpoint 614fa84595b2”, intent prompt recorded.
+- Freebuff session shows as an active session in `entire status` (alongside the pre-noon Codex session).
+- Note: `entire agent list`/`agent add` enumerate native agents only; external plugins are surfaced by the checkpoint-relevant commands (`entire enable --agent freebuff`, `entire hooks freebuff …`, `entire session attach --agent freebuff`) — per the external-agent-protocol design (`agent add` has no discovery hook in the CLI today).
 
 ### Companion (Agent Activity Universe + Databricks, pre-noon, still green)
 - 3D universe app (7 components, data adapter, Activity Replay, Risk View), **7 vitest tests passing**, `npm run build` + `tsc -b --noEmit` clean.
@@ -41,11 +47,11 @@ Freebuff (manicode) chats → entire-agent-freebuff (this fork) → Entire hooks
 Agent Activity Universe (React Three Fiber)  ←→  Databricks risk analytics (risk_map)
 ```
 
-## 4. 🔜 TO IMPLEMENT / VERIFY NEXT (before 3 PM)
-1. **Curveball response checkpoint** — commit the plugin + docs from an ACTIVE Freebuff session so Entire records a checkpoint created by Freebuff work (proof of the core claim). [in progress]
-2. Final docs commit (checkpoint ids/SHA into BUILDATHON.md table + this file).
-3. **User:** Databricks live run — import notebook, upload both NDJSON files, run all cells, screenshot tolerance output + risk_map.
-4. **User:** final push (mirror) + submission before **3:00 PM**: fork URL, SHA, mirror URL, checkpoint links, BUILDATHON.md, demo.
+## 4. 🔜 REMAINING (before 3 PM)
+1. ✅ Curveball checkpoint done: `614fa84595b2` on `dcfa571` (attach flow, real Freebuff session).
+2. Final docs commit → final verification checkpoint (in progress now).
+3. **User:** Databricks live run — import notebook, upload both NDJSON files (`events.ndjson`, `events-new-format.ndjson`), run all cells, screenshot tolerance output + risk_map.
+4. **User:** final push (mirror + GitHub fork) + submission before **3:00 PM**: fork URL, SHA, mirror URL, checkpoint links, BUILDATHON.md, demo.
 
 ## 5. 🔴 YOUR SIDE — Tasks Only You Can Do
 | # | Task | When | How |
