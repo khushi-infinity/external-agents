@@ -137,7 +137,7 @@ Developer / Judge
 
 | # | Task | When | How |
 |---|------|------|-----|
-| 1 | Mirror `khushi-infinity/cli` on entire.io | NOW / before noon | entire.io → import GitHub fork → select **India region** → clone from mirror |
+| 1 | Mirror `khushi-infinity/external-agents` on entire.io | NOW / before noon | entire.io → import GitHub fork → select **India region** → clone from mirror |
 | 2 | Databricks Free Edition signup | NOW / during break | databricks.com/try-databricks → keep workspace URL + credentials for demo |
 | 3 | Verify `entire status` shows checkpoints | before noon | `cd buildathon/cli && entire status` |
 | 4 | Commit pre-noon stable state | 11:45 | `git commit -m "feat: pre-noon stable agent activity universe"` + verify checkpoint |
@@ -195,10 +195,10 @@ Developer / Judge
 
 | Guide requirement | Status |
 |---|---|---|
-| Fork only after official start | ✅ khushi-infinity/cli fork |
+| Fork only after official start | ✅ khushi-infinity/external-agents fork |
 | `entire login` | ✅ logged in (India, in.auth.entire.io) |
-| `entire repo mirror create` + India region | ✅ khushi-infinity/cli on aws-ap-south-1, ready |
-| Clone through Entire mirror | ✅ buildathon/cli-mirror (origin = entire://aws-ap-south-1.entire.io) |
+| `entire repo mirror create` + India region | ✅ khushi-infinity/external-agents on aws-ap-south-1, ready |
+| Clone through Entire mirror | ✅ buildathon/external-agents-mirror (origin = entire://aws-ap-south-1.entire.io) |
 | `entire enable` checkpoints | ✅ enabled, sync to origin; hooks installed via `entire doctor --force` |
 | `entire plugin install graph` | ✅ graph v0.4.0 installed |
 | `entire graph init-agents --repo .` | ✅ wrote .entire/graph-agent.md + AGENTS.md |
@@ -212,7 +212,7 @@ Developer / Judge
 
 **⚠️ CRITICAL USER ACTION — CHECKPOINTS:** Entire checkpoints are created when a git commit happens DURING an active agent session. The build agent (Freebuff) is not natively supported, so milestone commits must be made from inside a supported agent session. **Codex is already installed and logged in** (`~/.npm-global/bin/codex`, ChatGPT plan). The user must:
 ```bash
-cd ~/Desktop/buildathon/cli-mirror
+cd ~/Desktop/buildathon/external-agents-mirror
 codex    # start interactive session (approve the 7 hooks on first run)
 # inside codex: make the milestone commit, e.g.
 #   "commit the current state as the pre-noon stable milestone"
