@@ -112,6 +112,92 @@ print("Wrote risk_map table:", f"{DATABASE}.risk_map")
 display(risk_map.limit(10))
 
 # COMMAND ----------
+# 7b) NOON CURVEBALL — the agent changed its format.
+# Freebuff/agents now also emit a NEW JSONL session-event format
+# (databricks/events-new-format.ndjson). The pipeline must tolerate it
+# without a rewrite: unknown event types are counted and skipped, known
+# events are transformed into the same event schema, and the results feed
+# the SAME risk_map table. Classic events.ndjson keeps working untouched.
+from pyspark.sql.functions import col, lit, coalesce, least, from_json, split, max as spark_max, round as spark_round
+
+KNOWN_EVENTS = {"session_started", "user_prompt", "agent_response", "file_changed",
+                "checkpoint_created", "session_ended", "tool_call", "tool_result",
+                "file_read", "usage"}
+
+try:
+    raw_new = spark.read.text("/FileStore/agent_universe/events-new-format.ndjson") \
+        .where(col("value").rlike("\\S"))
+    parsed_new = raw_new.select(
+        from_json(col("value"), "map<string,string>",
+                  {"mode": "PERMISSIVE"}).alias("m")
+    ).select(
+        col("m").getItem("event").alias("event"),
+        col("m").getItem("session_id").alias("session_id"),
+        col("m").getItem("path").alias("path"),
+        col("m").getItem("lines_added").alias("lines_added"),
+        col("m").getItem("lines_removed").alias("lines_removed"),
+        col("m").getItem("model").alias("model"),
+        col("m").getItem("timestamp").alias("timestamp"),
+    )
+except Exception as e:
+    print("FileStore read failed for new format, using embedded sample:", e)
+    parsed_new = spark.createDataFrame([
+        ("session_started", "btw-track3-demo-001", None, None, None, "acmecode-pro", "2026-09-06T09:00:00Z"),
+        ("user_prompt",      "btw-track3-demo-001", None, None, None, None, "2026-09-06T09:00:08Z"),
+        ("file_changed",     "btw-track3-demo-001", "src/checkout/apply_coupon.ts", "24", "3", None, "2026-09-06T09:02:31Z"),
+        ("file_changed",     "btw-track3-demo-001", "tests/checkout/apply_coupon.test.ts", "71", "0", None, "2026-09-06T09:03:12Z"),
+        ("checkpoint_created", "btw-track3-demo-001", None, None, None, None, "2026-09-06T09:04:49Z"),
+        ("session_ended",    "btw-track3-demo-001", None, None, None, None, "2026-09-06T09:05:02Z"),
+    ], ["event", "session_id", "path", "lines_added", "lines_removed", "model", "timestamp"])
+
+parsed_new = parsed_new.where(col("event").isNotNull())
+total_new = parsed_new.count()
+known_new = parsed_new.filter(col("event").isin(*sorted(KNOWN_EVENTS)))
+unknown_new = total_new - known_new.count()
+recognized = (100.0 * known_new.count() / total_new) if total_new else 0.0
+print(f"Curveball tolerance: {unknown_new} unknown event(s) skipped of {total_new} "
+      f"({recognized:.1f}% recognized) — unknown events never crash the pipeline.")
+
+# Transform new-format file_changed records into the SAME normalized schema
+# used by classic events, with a deterministic per-file risk heuristic
+# (new-format lines carry no precomputed risk; we derive one).
+files_new = (known_new
+             .filter(col("event") == "file_changed")
+             .withColumn("agent", coalesce(col("model"), lit("freebuff-agent")))
+             .withColumn("changes",
+                         coalesce(col("lines_added").cast("int"), lit(0))
+                         + coalesce(col("lines_removed").cast("int"), lit(0))))
+files_new = files_new.withColumn("change_count", least(col("changes"), lit(999)).cast("int")) \
+    .withColumn("risk_score", least(lit(100), lit(40) + col("change_count") * 3))
+new_events = files_new.select(
+    lit("file_change").alias("event_type"),
+    col("path").alias("file"),
+    col("agent"),
+    col("change_count"),
+    col("risk_score"),
+)
+print("New-format events normalized to the shared schema:")
+display(new_events)
+
+# COMMAND ----------
+# 7c) Merge formats into ONE risk map (classic + new), then persist.
+# Existing classic behaviour is untouched; the new format joins the same
+# analytics so hotspots/module risk/agent performance include both.
+risk_map_new = (new_events.groupBy("file")
+                .agg(spark_max("risk_score").alias("risk_score"),
+                     spark_max("change_count").alias("change_count")))
+risk_map_all = risk_map.unionByName(risk_map_new)
+risk_map_all.createOrReplaceTempView("risk_map_all")
+risk_map_final = spark.sql("""
+    SELECT file, MAX(risk_score) AS risk_score, SUM(change_count) AS change_count
+    FROM risk_map_all
+    GROUP BY file
+""")
+risk_map_final.write.mode("overwrite").saveAsTable(f"{DATABASE}.risk_map")
+print("risk_map rewritten from BOTH formats (original + new JSONL event format).")
+display(risk_map_final.limit(10))
+
+# COMMAND ----------
 # 8) Velocity metrics
 velocity = spark.sql("""
     SELECT

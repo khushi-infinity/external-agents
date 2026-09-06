@@ -1,232 +1,68 @@
-# 📋 Project Status — Agent Activity Universe
+# 📋 Project Status — Freebuff x Entire (E3) + Agent Activity Universe
 
 **Event:** BTW Buildathon 2026 (6 September 2026) · **Track:** E3 — Bring Entire to a New Agent or Workflow · **Optional:** Best Use of Databricks (opted in)
 
-## Pre-Noon Stable Milestone — 2026-09-06 11:43 IST
-
-**Commit message:** `Pre-noon stable milestone: Agent Activity Universe`
-
-**Intent:** This build is **Agent Activity Universe** for BTW Buildathon Entire track E3. It solves the developer visibility gap around AI coding agents by turning Entire checkpoint/session context into an explorable product surface for understanding what agents changed, why they changed it, and where risk is accumulating.
-
-**Architecture now:** Entire checkpoints and graph context feed a data adapter, which normalizes repository/session/checkpoint data for Databricks risk scoring and analytics. The React Three Fiber frontend renders that model as a 3D universe where files are nodes, dependency/activity relationships are lines, agent activity is visible in-scene, and risk/analytics overlays are available through UI controls.
-
-**Verifiably working now:**
-- `agent-universe` has a working React Three Fiber app with file nodes, agent markers, connection lines, orbit controls, inspector panel, filters, Risk View, Analytics modal, and Activity Replay.
-- `agent-universe/src/data/adapter.ts` loads a real export when present, tries `/api/repository`, and falls back to sample data so the demo remains usable offline.
-- `databricks/ingest_and_score.py`, `databricks/events.ndjson`, and `databricks/README.md` define the Databricks ingestion and scoring path.
-- Local verification at 2026-09-06 11:43 IST: `npm test` passed 2 files / 7 tests, and `npm run build` passed production TypeScript + Vite build.
-
-**Deferred until after the Noon Curveball:**
-- Wire a live Entire export from `.entire/` data into `public/data/entire-export.json` or a backend endpoint.
-- Run the Databricks notebook live in the workspace and capture evidence.
-- Connect `/api/analytics` to a live Databricks `risk_map` result instead of relying on the frontend fallback.
-- Implement any Curveball-specific requirement and update `BUILDATHON.md` sections 5-6 with the response.
-- Do final submission verification, final checkpoint, and final commit before the 3:00 PM IST deadline.
-
-**Known risks / fragile points:**
-- Live Entire export is not wired end to end yet; the app is currently protected by a sample-data fallback.
-- Databricks code exists and sample data is present, but the notebook has not been run live in the target workspace from this session.
-- 3D relationship layout is demo-deterministic and not fully generated from live Entire Graph relationships.
-- Vite emits a large chunk warning for the Three.js bundle; acceptable for this milestone, but code-splitting is deferred.
-- Remaining Entire checkpoint creation depends on committing from an active supported agent session with Entire hooks enabled.
-
-**Assumptions for a fresh session:**
-- Work must continue in `/Users/khushisarawagi/Desktop/buildathon/external-agents-mirror`.
-- The designated build app is `agent-universe/`; the Databricks assets are in `databricks/`.
-- Synthetic sample data is intentional until a real Entire export is dropped into `agent-universe/public/data/entire-export.json`.
-- Submission deadline is 3:00 PM IST on 2026-09-06, and the Noon Curveball should be handled in a fresh post-curveball session.
-
-> **Last updated:** 6 September 2026 11:47 IST, build day
+> **Last updated:** 6 September 2026 (~13:10, curveball window)
 >
-> ⚠️ **SOURCE OF TRUTH #1:** The PDF **`/Users/khushisarawagi/Downloads/What we're building.pdf`** (33 pages) is the authoritative build plan.
-> ⚠️ **SOURCE OF TRUTH #2 (STRICT RULES):** The PDF **`/Users/khushisarawagi/Downloads/BTW Buildathon 2026 - Participant Guide.pdf`** (9 pages) is the operating guide and MUST be followed strictly. Key rules: (1) **SUBMISSION DEADLINE IS 3:00 PM IST, NOT 4:00 PM**; (2) all implementation must happen in the clone created through the Entire mirror workflow; (3) required checkpoints at 4 milestones (initial understanding → pre-noon stable → curveball response → final verification); (4) Entire Graph activation required (`entire plugin install graph`, `entire graph init-agents --repo .`); (5) final checklist requires tests covering critical + Curveball behavior; (6) BUILDATHON.md must follow their exact 10-section outline; (7) fork only after official start, mirror with India region; (8) demo owner must be able to sign in and run the critical path; (9) no secrets anywhere; (10) fallback screenshot/recording for fragile live steps. Key directives: (1) the 3D visualization is NOT the product — the product is *"understand what AI coding agents are doing, why, and where risk is created"*; (2) Entire checkpoint/session data MUST be central — *"do not build a generic Three.js dashboard"*; (3) build the smallest useful version with sample data FIRST, then connect real Entire data, then polish, then Databricks; (4) Activity Replay is a priority demo feature; (5) the hero screen is the UNIVERSE, dashboard is secondary; (6) do NOT build login/registration/databases/billing/dashboards/chat. PDF phases: inspect repo → inspect Entire → architecture → backend/data adapter → 3D frontend → connect real data → test → polish → checkpoint + commit.
+> ⚠️ **SOURCE OF TRUTH #1:** `/Users/khushisarawagi/Downloads/What we're building.pdf` (authoritative build plan).
+> ⚠️ **SOURCE OF TRUTH #2:** `/Users/khushisarawagi/Downloads/BTW Buildathon 2026 - Participant Guide.pdf` (strict rules — submit by **3:00 PM IST**, implementation in the Entire-mirror clone, 4 checkpoints, graph evidence, 10-section BUILDATHON.md).
+> ⚡ **CURVEBALL (12:00):** `/Users/khushisarawagi/Downloads/12-00 - The Noon Curveball is live.pdf` + fixture `/Users/khushisarawagi/Downloads/track-3-agent-session.jsonl` — Track 3: **the agent changed its format** (see §4).
 
 ---
 
-## 1. What the Product Is
+## 1. What we're submitting now
 
-**Agent Activity Universe** — an interactive 3D visualization of AI coding agents working across a codebase. It turns Entire checkpoint/session context (prompts, files changed, sessions) into a navigable 3D universe, with Databricks-powered risk/analytics layered on top.
+The **E3 deliverable is the `entire-agent-freebuff` external-agent plugin** in `agents/entire-agent-freebuff/`: it makes Freebuff (the free coding agent used for this build) a first-class Entire agent so Freebuff sessions produce checkpoints — which was previously impossible ("Entire will not store checkpoints done by freebuff"). The companion **Agent Activity Universe** (3D app in `agent-universe/`) + **Databricks** risk analytics consume that checkpoint context; the universe is the demo surface, Databricks the analytics layer.
 
-**The product statement:** *"Understand what AI coding agents are doing across your codebase, why they are doing it, and where their work is creating risk."*
+## 2. ✅ DONE — everything built and verified
 
-| Layer | Source | Role |
-|-------|--------|------|
-| What did the agent do? | Entire Checkpoints | sessions, prompts, files changed, tool calls |
-| Where does the work connect? | Entire Graph / code structure | 3D nodes + dependency connections |
-| What patterns & risks emerge? | Databricks analytics | risk overlays, hotspots, failure patterns, velocity |
-| Our product | React Three Fiber | interactive 3D universe |
+### Freebuff external agent (`agents/entire-agent-freebuff/`)
+- Full external-agent protocol binary: `info`, `detect`, session helpers, transcript read/chunk/reassemble, `format-resume-command`, hooks, transcript analyzer.
+- **Dual-format transcript support (Curveball):** original `chat-messages.json` array + new JSONL event stream → one normalized turn model; unknown events skipped+countered; incomplete transcripts → partial results.
+- Hook lifecycle: `session-start`, `prompt-submit`, `stop`, `session-end` mapped to events 1/2/3/5; unknown hook names/payloads ignored; install/uninstall idempotent via `.freebuff/entire-hooks.json`.
+- Session layout mapping verified on the real machine: `~/.config/manicode/projects/<project>/chats/<sid>/` with repo matching via `run-state.json` projectRoot.
+- **Tests: 10+ passing** (`internal/freebuff` + `internal/protocol`) covering all four Curveball cases (original format, new format, unknown events, incomplete input) plus hooks, paths, detect, read-session.
+- Committed fixture: `testdata/track-3-agent-session.jsonl` (exact attached card).
+- e2e adapter wired: `e2e/agents/freebuff.go` (opt-in `FREEBDUFF_E2E=1 E2E_AGENT=freebuff`); CI auto-discovers the new agent (unit + build + protocol compliance).
+- **LIVE VERIFIED:** binary built and installed to `~/.local/bin/entire-agent-freebuff`; `entire enable --agent freebuff --local` installed 4 hooks; `entire hooks freebuff prompt-submit` created an **active Freebuff session** in `entire status`. CLI analyzer runs against the real fixture return correct prompts/files/summary; truncated input returns partial results.
 
----
+### Curveball response
+- Graph impact analysis run before editing (see BUILDATHON.md §5). Implementation + tests as above. Databricks pipeline adapted (notebook cells 7b–7c tolerate the new format, unknown events skipped; `events-new-format.ndjson` fixture added).
 
-## 2. ✅ DONE — Everything Built
-
-### Where the implementation lives (STRICT GUIDE COMPLIANCE)
-
-All implementation lives in the **Entire mirror clone**: `buildathon/external-agents-mirror/` (origin = `entire://aws-ap-south-1.entire.io/gh/khushi-infinity/external-agents`, India region). Pushed to mirror branch `agent-activity-universe`, **latest SHA `10cb63c`** (main is protected on the mirror; pushes go to the feature branch).
-
-```
-external-agents-mirror/            ← THE designated fork clone (work here)
-├── BUILDATHON.md                  # Submission doc, guide's 10-section outline
-├── PROGRESS.md                    # This status doc
-├── agent-universe/                # OUR APP (full source + tests + demo)
-│   ├── demo.html                  # Standalone offline demo (no npm needed)
-│   ├── public/data/entire-export.example.json   # Real-data drop-in schema
-│   └── src/                       # 7 components + data layer + analytics
-└── databricks/                    # Databricks pipeline (notebook + events + README)
-    ├── ingest_and_score.py        # Notebook: NDJSON → risk_map table
-    ├── events.ndjson              # Sample events (12 files) to upload
-    └── README.md                  # 5-minute workspace setup
-```
-
-(Also on disk: `buildathon/agent-universe/` — dev working copy with node_modules; sync via rsync. `buildathon/cli-mirror/` — the abandoned cli fork clone, ignore.)
-
-### Features implemented (all verified working)
-- 3D universe: files = nodes, dependencies = connection lines, stars/sparkles, orbit controls
-- Agent entities (Claude ◆ / Codex ● / Copilot ▲ / Aider ■) floating near touched files
-- Node inspector: agent, checkpoint, prompt, files changed, risk score, connections
-- **Risk View toggle** — nodes + lines recolor by Databricks risk scores
-- **Analytics modal** — agent performance, file hotspots, failure patterns, velocity
-- Agent + module filters
-- **Activity Replay** — timeline scrubber, nodes pulse white during playback (verified)
-- Data adapter priority: real export → live API → sample data (demo never breaks)
-- **Databricks notebook** `databricks/ingest_and_score.py` — full ingestion + scoring pipeline
-- **7 automated tests** (vitest) covering critical behavior
-
-### Verification evidence
-- ✅ `npm run build` passes (TypeScript strict + Vite production build)
-- ✅ `npx tsc -b --noEmit` — zero errors
-- ✅ `npm test` — 7/7 passing (adapter import, timeline ordering, risk scoring, NDJSON export, connection colors)
-- ✅ Preview renders: 3D canvas, all controls, replay advances steps, Risk View toggles
-
----
+### Companion (Agent Activity Universe + Databricks, pre-noon, still green)
+- 3D universe app (7 components, data adapter, Activity Replay, Risk View), **7 vitest tests passing**, `npm run build` + `tsc -b --noEmit` clean.
+- Databricks notebook `databricks/ingest_and_score.py` + sample events + README; now adapted for both formats.
+- Entire Graph evidence gathered pre-noon (search/impact/diff) — recorded in BUILDATHON.md.
 
 ## 3. 🗺️ Architecture
-
 ```
-AI Agents (Claude / Codex / Copilot / Aider)
-    ↓
-Entire CLI + Checkpoints + Graph          ← captures prompts, files, sessions
-    ↓
-Data adapter (src/data/adapter.ts)        ← normalizes to common model
-    1) public/data/entire-export.json (real drop-in export)
-    2) /api/repository (live backend)
-    3) sample-data.ts (offline fallback)
-    ↓
-Databricks analytics (databricks/ingest_and_score.py)  ← risk scoring, hotspots, velocity
-    ↓
-3D Universe (React Three Fiber)           ← files= nodes, deps= lines, agents= entities
-    ↓
-Developer / Judge
+Freebuff (manicode) chats → entire-agent-freebuff (this fork) → Entire hooks/checkpoints/graph
+        ↓  adapter
+Agent Activity Universe (React Three Fiber)  ←→  Databricks risk analytics (risk_map)
 ```
 
-The `adapter → normalized data → product` separation makes the Noon Curveball cheap: "support a new agent" → add an agent adapter; "multiple repositories" → extend the adapter; "work offline" → swap the data-loading layer.
-
----
-
-## 4. 🔜 TO IMPLEMENT NEXT (technical)
-
-### P0 — before 3 PM (guide-required)
-1. **Pre-noon checkpoint (11:45)** — commit from inside a Codex session in `external-agents-mirror`, record intent/architecture/unresolved/risks.
-2. **Noon Curveball (12:00)** — stop, close session, receive constraint, start fresh session, run `entire graph impact` before editing.
-3. **Final checkpoint + verification** — tests pass (critical + Curveball), BUILDATHON.md complete, final commit pushed, SHA matches submission.
-4. **Databricks live run** — import `ingest_and_score.py` in the logged-in workspace, upload `events.ndjson`, run cells, screenshot output (fallback evidence).
-
-### P1 — demo strength
-5. Generate a **real** `entire-export.json` from the repo's `.entire/` data (replaces synthetic sample).
-6. Point `/api/analytics` at the Databricks `risk_map` table (live wiring, not precomputed).
-
-### P2 — polish
-7. Risk explainer panel, time-slider, diff preview, bundle code-splitting.
-
----
+## 4. 🔜 TO IMPLEMENT / VERIFY NEXT (before 3 PM)
+1. **Curveball response checkpoint** — commit the plugin + docs from an ACTIVE Freebuff session so Entire records a checkpoint created by Freebuff work (proof of the core claim). [in progress]
+2. Final docs commit (checkpoint ids/SHA into BUILDATHON.md table + this file).
+3. **User:** Databricks live run — import notebook, upload both NDJSON files, run all cells, screenshot tolerance output + risk_map.
+4. **User:** final push (mirror) + submission before **3:00 PM**: fork URL, SHA, mirror URL, checkpoint links, BUILDATHON.md, demo.
 
 ## 5. 🔴 YOUR SIDE — Tasks Only You Can Do
-
 | # | Task | When | How |
 |---|------|------|-----|
-| 1 | ~~Mirror fork on entire.io (India)~~ | ✅ DONE | `khushi-infinity/external-agents` on aws-ap-south-1, Mirror ID `01M1THHNBW0K7KFTZGE9ETPD9K` |
-| 2 | Databricks workspace run | before 3 PM | import `databricks/ingest_and_score.py` → upload `events.ndjson` → run all cells → screenshot |
-| 3 | ~~**Pre-noon checkpoint**~~ | ✅ DONE | Checkpoint `2adb77572071` at commit `10cb63c` (`Pre-noon stable milestone: Agent Activity Universe`) |
-| 4 | **Noon Curveball** | **12:00** | STOP, close session, receive constraint, fresh session, `entire graph impact` before editing |
-| 5 | Curveball response + final checkpoint | 1:00–2:30 | implement, test, checkpoint, update BUILDATHON.md §5–6 |
-| 6 | Submit | **before 3:00 PM** | track E3, fork URL, final SHA, mirror URL, checkpoint links, demo access, Databricks opt-in |
+| 1 | Mirror fork (India) + graph + hooks | ✅ done | Mirror ID `01M1THHNBW0K7KFTZGE9ETPD9K`, branch per §6 |
+| 2 | Databricks workspace run | before 3 PM | import `databricks/ingest_and_score.py` → upload `events.ndjson` + `events-new-format.ndjson` → run all cells → screenshot |
+| 3 | Final push + submission | before 3 PM | push branch, record SHA, checkpoint links, submit track E3 |
+| 4 | Fallback screenshot/recording | before 3 PM | demo.html walkthrough + Databricks output |
 
----
+## 6. 📊 Submission state
+- **Implementation clone:** `external-agents-mirror/` (Entire mirror clone; origin `entire://aws-ap-south-1.entire.io/gh/khushi-infinity/external-agents`).
+- **GitHub fork:** `github.com/khushi-infinity/external-agents` (sync the same commits there).
+- **Branch:** `agent-activity-universe` is the long-lived submission branch on the mirror (main protected); new curveball commits will be pushed there.
+- Entries to confirm at final push: pre-noon checkpoint `2adb77572071` (commit `10cb63c`) already exists on the branch; curveball + final checkpoints get recorded in BUILDATHON.md §7.
 
-## 6. 📊 Rubric Mapping (how we score)
-
-**Entire main challenge (100 pts):**
-| Criterion | Pts | Our evidence |
-|-----------|-----|--------------|
-| Problem and innovation | 20 | Developer visibility gap → 3D universe; strong demo story |
-| Technical implementation | 25 | Working React/Three.js app, typed, builds, 7 tests |
-| Response to Noon Curveball | 15 | Layered architecture; fill §5–6 on the day |
-| Use of Entire Checkpoints | 15 | Checkpoint `e6e841e2def8` created; adapter reads checkpoint context; inspector shows prompts/checkpoints |
-| Use of Entire Graph | 15 | Graph activated + verified: `search`, `impact`, `diff` all return real evidence on our app |
-| Demonstration & future potential | 10 | Judge script (BUILDATHON.md §9), replay feature, continuation path documented |
-
-**Best Use of Databricks (100 pts, optional):**
-| Criterion | Pts | Our evidence |
-|-----------|-----|--------------|
-| Meaningful use of Databricks | 30 | Risk scoring feeds Risk View — removing it removes a core layer |
-| Working implementation & reliability | 25 | Full notebook pipeline (`ingest_and_score.py`) + 7 passing tests |
-| User value & product decisions | 20 | Hotspots/failures/velocity inform developer decisions |
-| Data quality & provenance | 15 | Synthetic data documented; real export is P1 |
-| Response to Curveball | 10 | Data pipeline adapts with adapter swap |
-
----
-
-## 7. ⚠️ Known Limitations (honest, for BUILDATHON.md §8)
-
-1. MVP uses synthetic sample data; real Entire export path exists (`entire-export.json` drop-in) but needs the actual `.entire/` output wired.
-2. Databricks pipeline is fully implemented and runnable (notebook + events + schema); live notebook → app wiring (`/api/analytics` → `risk_map`) is the remaining hook-up.
-3. 3D layout uses deterministic sample positions; production layout should derive from Entire Graph relationships.
-4. Bundle is ~1.27 MB (Three.js) — acceptable for demo, code-splitting is a P2.
-5. Checkpoints 2–4 still need user action from inside a supported agent session (Codex installed + logged in).
-
----
-
-## 8. Competition Day Timeline — CORRECTED (participant guide: submit by 3:00 PM)
-
-| Time | Milestone | Status |
-|------|-----------|--------|
-| 8:00–9:00 | Breakfast, check-in, setup | ✅ |
-| 9:00–12:00 | Kickoff + build session | ✅ core built (correct fork, mirror, graph, hooks, checkpoint 1) |
-| 11:45 | Preserve stable state + pre-noon checkpoint | ✅ done: checkpoint `2adb77572071` at commit `10cb63c` |
-| 12:00–1:00 | ⚡ Noon Curveball + lunch | 🔲 receive, stop, fresh session |
-| 1:00–3:00 | Implement constraint, test, final checkpoint, finish BUILDATHON.md | 🔲 |
-| **3:00 PM** | **SUBMISSION DEADLINE (not 4 PM!)** | 🔲 |
-| 3:00–5:00 | Judging + winner announcement | 🔲 |
-
----
-
-## 9. Strict Participant-Guide Compliance Status
-
-| Guide requirement | Status |
-|---|---|
-| Correct E3 designated repo (`entireio/external-agents`) | ✅ forked as `khushi-infinity/external-agents` (we initially forked `cli` — **fixed**) |
-| `entire login` | ✅ logged in (India, in.auth.entire.io) |
-| `entire repo mirror create` + India region | ✅ aws-ap-south-1, Mirror ID `01M1THHNBW0K7KFTZGE9ETPD9K`, ready |
-| Clone through Entire mirror | ✅ `buildathon/external-agents-mirror` (origin = entire://aws-ap-south-1.entire.io/gh/khushi-infinity/external-agents) |
-| `entire enable` checkpoints | ✅ enabled, sync to origin; git hooks installed via `entire doctor --force` |
-| `entire plugin install graph` | ✅ graph v0.4.0 installed |
-| `entire graph init-agents --repo .` | ✅ wrote `.entire/graph-agent.md` + `AGENTS.md` |
-| Implementation lives in the designated fork | ✅ agent-universe/ + databricks/ inside external-agents-mirror, pushed to `agent-activity-universe` (SHA `87aea50`) |
-| Checkpoint 1: initial understanding | ✅ **`e6e841e2def8`** (09-06 10:37, linked to `ca06a8e`) — created via `entire session attach` with the real build-session transcript |
-| Checkpoints 2–4 (pre-noon, curveball, final) | ✅ pre-noon done: checkpoint `2adb77572071` at commit `10cb63c`; 🔲 curveball pending; 🔲 final pending |
-| Entire Graph evidence gathered | ✅ `search` (found computeRiskMap top-ranked), `impact` (blast radius), `diff` (semantic change list) — recorded in BUILDATHON.md |
-| Tests covering critical behavior | ✅ 7 vitest tests passing (adapter, timeline, risk, NDJSON, connection colors) |
-| BUILDATHON.md in guide's 10-section outline | ✅ at external-agents-mirror/BUILDATHON.md (all sections filled except Curveball §5–6) |
-| Databricks use — meaningful + working | ✅ notebook pipeline + events + README committed; **user: run in workspace** for live evidence |
-| Fallback screenshot/recording | 🔲 user: record demo.html walkthrough + Databricks notebook output |
-
-**⚠️ CRITICAL USER ACTION — REMAINING CHECKPOINTS:** Entire checkpoints are created when a git commit happens DURING an active agent session. The build agent (Freebuff) is not natively supported, so milestone commits must be made from inside a supported agent session. **Codex is already installed and logged in** (`~/.npm-global/bin/codex`). The user must:
-```bash
-cd ~/Desktop/buildathon/external-agents-mirror
-codex    # start interactive session (approve the hooks on first run)
-# inside codex: make the milestone commit, e.g.
-#   "commit the current state as the pre-noon stable milestone"
-# then verify:
-entire checkpoint list
-```
-Checkpoint quality > quantity: capture decisions, rejected options, failures, assumptions, open risks.
+## 7. ⚠️ Known limitations (honest, BUILDATHON.md §10)
+1. Freebuff engine has no user-configurable hook registry yet → plugin writes `.freebuff/entire-hooks.json` (declarative) + manual `entire hooks freebuff` driving is verified; engine auto-fire is the Freebuff-side step.
+2. Freebuff CLI has no headless prompt flag → lifecycle e2e needs interactive session.
+3. Universe 3D layout uses sample positions; Databricks live app wiring (`/api/analytics` → `risk_map`) remains for post-demo.
+4. Universe MVP uses synthetic sample data; real `.entire/` export path exists but unexercised.

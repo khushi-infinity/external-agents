@@ -22,6 +22,7 @@ External agents communicate with Entire CLI via subcommands that accept and retu
 | [Grok Build](agents/entire-agent-grok/) | `agents/entire-agent-grok/` | Implemented — hooks + transcript analysis + compact transcripts |
 | [Oh My Pi](agents/entire-agent-omp/) | `agents/entire-agent-omp/` | Implemented — hooks + transcript analysis + compact transcripts |
 | [Kilo](agents/entire-agent-kilo/) | `agents/entire-agent-kilo/` | Implemented (preview) — hooks + transcript analysis + token calculation + compact transcripts |
+| [Freebuff](agents/entire-agent-freebuff/) | `agents/entire-agent-freebuff/` | Implemented (preview) — hooks + dual-format transcript analysis (original chat JSON + new JSONL event format) |
 
 See each agent's own README for setup and usage instructions.
 

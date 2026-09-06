@@ -7,13 +7,22 @@ This folder contains the Databricks side of the product. Databricks is **essenti
 ```
 Entire checkpoints/sessions
         ↓  (app exports NDJSON via exportEventsNDJSON / databricks/events.ndjson)
-Development event dataset (JSON/NDJSON)
-        ↓  (this notebook: ingest → clean → aggregate)
+Development event dataset (JSON/NDJSON) — classic OR new JSONL event format
+        ↓  (this notebook: ingest → clean → aggregate, tolerates both formats)
 Databricks analytics: agent performance, file hotspots,
 failure patterns, velocity, per-file risk map
         ↓
 App /api/analytics → 3D Risk View + Analytics panel
 ```
+
+### Noon Curveball — the agent changed its format
+
+Agents now also emit a **new JSONL session-event format** (`session_started`, `user_prompt`, `file_changed`, `checkpoint_created`, `session_ended`, …). The notebook adapts without a rewrite:
+
+- Upload **both** `databricks/events.ndjson` (original) and `databricks/events-new-format.ndjson` (new format; the Track 3 Curveball fixture plus a deliberately unknown `model_switched` event).
+- Cells 7b–7c parse the new format, **count and skip unknown event types** (never crash), normalize `file_changed` records into the same event schema with a derived risk heuristic, and merge both formats into the **same** `agent_universe.risk_map` table.
+- Classic behaviour is untouched: cells 1–7 run exactly as before on original-format data.
+- The run prints the tolerance evidence (unknown events skipped / recognized %) so the adapted workflow is verifiable.
 
 ## Setup (5 minutes, in your Databricks workspace)
 
@@ -27,7 +36,7 @@ App /api/analytics → 3D Risk View + Analytics panel
      // app: window.__exportEvents() → databricks/events.ndjson
      // or use the sample at databricks/events.ndjson
      ```
-   - Data → Add Data → upload `databricks/events.ndjson` to `/FileStore/agent_universe/`
+   - Data → Add Data → upload `databricks/events.ndjson` **and** `databricks/events-new-format.ndjson` to `/FileStore/agent_universe/`
 5. **Run all cells** in the notebook (serverless compute). It writes the `agent_universe.risk_map` table.
 6. **Verify:** the notebook displays file hotspots, module risk, agent performance, velocity, and the risk map.
 
