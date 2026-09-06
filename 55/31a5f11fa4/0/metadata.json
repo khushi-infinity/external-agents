@@ -1,0 +1,74 @@
+{
+  "cli_version": "0.10.5",
+  "checkpoint_id": "5531a5f11fa4",
+  "session_id": "fb-curveball-001",
+  "strategy": "manual-commit",
+  "created_at": "2026-09-06T07:29:28.023444Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "BUILDATHON.md",
+    "PROGRESS.md"
+  ],
+  "agent": "Freebuff",
+  "model": "free-lite",
+  "turn_id": "bc8879c158b3",
+  "session_metrics": {
+    "turn_count": 1
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-09-06T07:29:28.016234Z",
+    "agent_lines": 0,
+    "agent_removed": 0,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 278,
+    "total_committed": 0,
+    "total_lines_changed": 278,
+    "agent_percentage": 0,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 3374,
+      "user_lines_removed": 281,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".freebuff/entire-hooks.json": 27,
+        "BUILDATHON.md": 76,
+        "PROGRESS.md": 45,
+        "README.md": 1,
+        "agents/entire-agent-freebuff/.gitignore": 1,
+        "agents/entire-agent-freebuff/AGENT.md": 108,
+        "agents/entire-agent-freebuff/README.md": 134,
+        "agents/entire-agent-freebuff/cmd/entire-agent-freebuff/main.go": 73,
+        "agents/entire-agent-freebuff/go.mod": 3,
+        "agents/entire-agent-freebuff/internal/freebuff/agent.go": 192,
+        "agents/entire-agent-freebuff/internal/freebuff/hooks.go": 241,
+        "agents/entire-agent-freebuff/internal/freebuff/hooks_test.go": 134,
+        "agents/entire-agent-freebuff/internal/freebuff/paths.go": 302,
+        "agents/entire-agent-freebuff/internal/freebuff/paths_test.go": 138,
+        "agents/entire-agent-freebuff/internal/freebuff/transcript.go": 488,
+        "agents/entire-agent-freebuff/internal/freebuff/transcript_test.go": 301,
+        "agents/entire-agent-freebuff/internal/freebuff/types.go": 85,
+        "agents/entire-agent-freebuff/internal/protocol/handlers_test.go": 278,
+        "agents/entire-agent-freebuff/internal/protocol/info_test.go": 59,
+        "agents/entire-agent-freebuff/internal/protocol/protocol.go": 330,
+        "agents/entire-agent-freebuff/internal/protocol/types.go": 130,
+        "agents/entire-agent-freebuff/mise.toml": 11,
+        "agents/entire-agent-freebuff/testdata/track-3-agent-session.jsonl": 17,
+        "databricks/README.md": 12,
+        "databricks/events-new-format.ndjson": 18,
+        "databricks/ingest_and_score.py": 86,
+        "e2e/agents/freebuff.go": 84
+      },
+      "user_removed_per_file": {
+        "BUILDATHON.md": 69,
+        "PROGRESS.md": 209,
+        "databricks/README.md": 3
+      }
+    }
+  ]
+}

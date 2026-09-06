@@ -1,0 +1,1 @@
+Checkpoints are not added for Freebuff so Entire does not store checkpoints done by Freebuff. Build the external agent plugin, use the External Agent Skill, handle the noon curveball format change (both formats, unknown events, incomplete transcripts), update PROGRESS.md/BUILDATHON.md, verify checkpoints and graphs.
