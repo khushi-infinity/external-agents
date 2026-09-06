@@ -1,0 +1,53 @@
+{
+  "name": "my-repo",
+  "files": [
+    {
+      "path": "src/auth/service.ts",
+      "risk_score": 82,
+      "change_count": 17,
+      "last_agent": "claude",
+      "last_checkpoint": "CP-1842",
+      "last_prompt": "Implement OAuth authentication flow with refresh tokens",
+      "connections": ["src/auth/routes.ts", "src/database/client.ts"]
+    },
+    {
+      "path": "src/payments/service.ts",
+      "risk_score": 71,
+      "change_count": 14,
+      "last_agent": "codex",
+      "last_checkpoint": "CP-1835",
+      "last_prompt": "Add Stripe webhook handling for payment intents",
+      "connections": ["src/payments/api.ts"]
+    }
+  ],
+  "sessions": [
+    {
+      "id": "sess_182",
+      "agent": "claude",
+      "start_time": "2026-09-06T09:15:00Z",
+      "end_time": "2026-09-06T10:42:00Z",
+      "prompt_count": 14,
+      "file_changes": 8,
+      "tool_calls": 32,
+      "checkpoints": ["CP-1842"],
+      "success_rate": 0.91,
+      "tokens_used": 142000,
+      "files_touched": ["src/auth/service.ts", "src/auth/routes.ts"]
+    }
+  ],
+  "checkpoints": [
+    {
+      "id": "CP-1842",
+      "commit": "a83f91c",
+      "session_id": "sess_182",
+      "agent": "claude",
+      "timestamp": "2026-09-06T10:42:00Z",
+      "prompt": "Implement OAuth authentication flow with refresh tokens",
+      "files_changed": ["src/auth/service.ts"],
+      "tool_calls": 14,
+      "tokens": 42000,
+      "intent": "Add secure OAuth2 authentication with JWT refresh token rotation",
+      "risk_score": 82
+    }
+  ]
+}
